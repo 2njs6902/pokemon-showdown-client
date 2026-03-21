@@ -229,11 +229,13 @@ export const Dex = new class implements ModdedDex {
 
 	pokeballs: string[] | null = null;
 
-	resourcePrefix = (() => {
-		let prefix = '';
-		if (window.document?.location?.protocol !== 'http:') prefix = 'https:';
-		return `${prefix}//${window.Config ? Config.routes.client : 'play.pokemonshowdown.com'}/`;
-	})();
+	resourcePrefix = window.location.origin + "/";
+
+	// resourcePrefix = (() => {
+	// 	let prefix = '';
+	// 	if (window.document?.location?.protocol !== 'http:') prefix = 'https:';
+	// 	return `${prefix}//${window.Config ? Config.routes.client : 'play.pokemonshowdown.com'}/`;
+	// })();
 
 	fxPrefix = (() => {
 		const protocol = (window.document?.location?.protocol !== 'http:') ? 'https:' : '';
@@ -725,7 +727,12 @@ export const Dex = new class implements ModdedDex {
 				if (!animationData[facing]) continue;
 				if (facing.endsWith('f')) name += '-f';
 				if (spriteData.gen >= 6) spriteData.pixelated = false;
-				dir = animDir + 'ani' + dir;
+				if (options.mod) {
+					dir = `${options.mod}/ani` + dir;
+				} 
+				else {
+					dir = animDir + 'ani' + dir;
+				}
 				spriteData.w = animationData[facing].w;
 				spriteData.h = animationData[facing].h;
 				spriteData.url += dir + '/' + name + '.gif';
@@ -736,7 +743,12 @@ export const Dex = new class implements ModdedDex {
 		if (!animatedSprite) {
 			// There is no entry or enough data in pokedex-mini.js
 			// Handle these in case-by-case basis; either using BW sprites or matching the played gen.
-			dir = (baseDir || 'gen5') + dir;
+			if (options.mod) {
+				dir = `${options.mod}` + dir;
+			}
+			else {
+				dir = (baseDir || 'gen5') + dir;
+			}
 
 			// Gender differences don't exist prior to Gen 4,
 			// so there are no sprites for it
@@ -744,7 +756,12 @@ export const Dex = new class implements ModdedDex {
 				name += '-f';
 			}
 
-			spriteData.url += dir + '/' + name + '.png';
+			if (options.mod) {
+				spriteData.url = `sprites/${options.mod}/${name}.png`;
+			}
+			else {
+				spriteData.url += dir + '/' + name + '.png';
+			}
 		}
 
 		if (!options.noScale) {
