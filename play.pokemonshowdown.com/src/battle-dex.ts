@@ -61,6 +61,7 @@ declare const require: any;
 declare const global: any;
 declare const process: any;
 
+// Ignore, just handles what the type of window the script uses
 if (typeof window === 'undefined') {
 	// Node
 	global.window = global;
@@ -77,7 +78,13 @@ export function toID(text: any) {
 	} else if (text?.userid) {
 		text = text.userid;
 	}
+	
 	if (typeof text !== 'string' && typeof text !== 'number') return '' as ID;
+
+	// TESTING
+	const result = `${text}`.toLowerCase().replace(/[^a-z0-9]+/g, '');
+	console.log("This is the output from toID Function: ", result);
+
 	return `${text}`.toLowerCase().replace(/[^a-z0-9]+/g, '') as ID;
 }
 
@@ -184,6 +191,8 @@ export function toName(name: any) {
 	);
 	name = name.replace(/[\u239b-\u23b9]/g, '');
 
+	console.log("This is the output of toName function: ", name);
+
 	return name;
 }
 
@@ -228,14 +237,12 @@ export const Dex = new class implements ModdedDex {
 	readonly statNamesExceptHP: readonly Dex.StatNameExceptHP[] = ['atk', 'def', 'spa', 'spd', 'spe'];
 
 	pokeballs: string[] | null = null;
-
-	resourcePrefix = window.location.origin + "/";
-
-	// resourcePrefix = (() => {
-	// 	let prefix = '';
-	// 	if (window.document?.location?.protocol !== 'http:') prefix = 'https:';
-	// 	return `${prefix}//${window.Config ? Config.routes.client : 'play.pokemonshowdown.com'}/`;
-	// })();
+	
+	resourcePrefix = (() => {
+		let prefix = '';
+		if (window.document?.location?.protocol !== 'http:') prefix = 'https:';
+		return `${prefix}//${window.Config ? Config.routes.client : 'play.pokemonshowdown.com'}/`;
+	})();
 
 	fxPrefix = (() => {
 		const protocol = (window.document?.location?.protocol !== 'http:') ? 'https:' : '';
@@ -597,6 +604,7 @@ export const Dex = new class implements ModdedDex {
 			pokemon = pokemon.getSpeciesForme() + (isGigantamax ? '-Gmax' : '');
 		}
 		const species = Dex.species.get(pokemon);
+		const mod = options.mod || '';
 		// Gmax sprites are already extremely large, so we don't need to double.
 		if (species.name.endsWith('-Gmax')) isDynamax = false;
 		let spriteData = {
@@ -610,6 +618,14 @@ export const Dex = new class implements ModdedDex {
 			cryurl: '',
 			shiny: options.shiny,
 		};
+
+		console.log('[Sprite Debug]', {
+			pokemon: pokemon instanceof Pokemon ? pokemon.speciesForme : pokemon,
+			isFront,
+			options,
+			spriteData,
+    	});
+
 		let name = species.spriteid;
 		let dir;
 		let facing;
@@ -714,54 +730,79 @@ export const Dex = new class implements ModdedDex {
 
 		let animatedSprite = false;
 		if (!Dex.prefs('noanim') && !Dex.prefs('nogif') && spriteData.gen >= 5) {
-			const animationArray: [AnyObject, string][] = [];
-			if (baseDir === '' && window.BattlePokemonSprites) {
-				animationArray.push([BattlePokemonSprites[speciesid], '']);
-			}
-			if (window.BattlePokemonSpritesBW) {
-				animationArray.push([BattlePokemonSpritesBW[speciesid], 'gen5']);
-			}
-			for (const [animationData, animDir] of animationArray) {
-				if (!animationData) continue;
-				if (animationData[facing + 'f'] && options.gender === 'F') facing += 'f';
-				if (!animationData[facing]) continue;
-				if (facing.endsWith('f')) name += '-f';
-				if (spriteData.gen >= 6) spriteData.pixelated = false;
-				if (options.mod) {
-					dir = `${options.mod}/ani` + dir;
-				} 
-				else {
-					dir = animDir + 'ani' + dir;
-				}
-				spriteData.w = animationData[facing].w;
-				spriteData.h = animationData[facing].h;
-				spriteData.url += dir + '/' + name + '.gif';
+
+			// New
+			if (options.mod) {
+				let modDir = options.mod;
+				if (!spriteData.isFrontSprite) modDir += '-back';
+				if (options.shiny) modDir += '-shiny';
+				dir = `${modDir}/ani`;
+				spriteData.url = `${this.resourcePrefix}sprites/${dir}/${name}.gif`;
+				spriteData.w = 96;
+				spriteData.h = 96;
 				animatedSprite = true;
-				break;
+			} else {
+				const animationArray: [AnyObject, string][] = [];
+				if (baseDir === '' && window.BattlePokemonSprites) {
+					animationArray.push([BattlePokemonSprites[speciesid], '']);
+				}
+				if (window.BattlePokemonSpritesBW) {
+					animationArray.push([BattlePokemonSpritesBW[speciesid], 'gen5']);
+				}
+				for (const [animationData, animDir] of animationArray) {
+					if (!animationData) continue;
+					if (animationData[facing + 'f'] && options.gender === 'F') facing += 'f';
+					if (!animationData[facing]) continue;
+					if (facing.endsWith('f')) name += '-f';
+					if (spriteData.gen >= 6) spriteData.pixelated = false;
+					if (options.mod) {
+						dir = `${options.mod}/ani` + dir;
+					} 
+					else {
+						dir = animDir + 'ani' + dir;
+					}
+					spriteData.w = animationData[facing].w;
+					spriteData.h = animationData[facing].h;
+					spriteData.url += dir + '/' + name + '.gif';
+					animatedSprite = true;
+					break;
+				}
 			}
 		}
 		if (!animatedSprite) {
-			// There is no entry or enough data in pokedex-mini.js
-			// Handle these in case-by-case basis; either using BW sprites or matching the played gen.
 			if (options.mod) {
-				dir = `${options.mod}` + dir;
-			}
-			else {
+				let modDir = options.mod;
+				if (!spriteData.isFrontSprite) modDir += '-back';
+				if (options.shiny) modDir += '-shiny';
+				spriteData.url = `${this.resourcePrefix}sprites/${modDir}/${name}.png`;
+			} else {
 				dir = (baseDir || 'gen5') + dir;
-			}
-
-			// Gender differences don't exist prior to Gen 4,
-			// so there are no sprites for it
-			if (spriteData.gen >= 4 && miscData['frontf'] && options.gender === 'F') {
-				name += '-f';
-			}
-
-			if (options.mod) {
-				spriteData.url = `sprites/${options.mod}/${name}.png`;
-			}
-			else {
 				spriteData.url += dir + '/' + name + '.png';
 			}
+			// // There is no entry or enough data in pokedex-mini.js
+			// // Handle these in case-by-case basis; either using BW sprites or matching the played gen.
+			// if (options.mod) {
+			// 	dir = `${options.mod}` + dir;
+			// }
+			// else {
+			// 	dir = (baseDir || 'gen5') + dir;
+			// }
+
+			// // Gender differences don't exist prior to Gen 4,
+			// // so there are no sprites for it
+			// if (spriteData.gen >= 4 && miscData['frontf'] && options.gender === 'F') {
+			// 	name += '-f';
+			// }
+
+			// // if (options.mod) {
+			// // 	spriteData.url = `sprites/${options.mod}/${name}.png`;
+			// // }
+			// if (options.mod) {
+			// 	spriteData.url = `${this.resourcePrefix}${dir}/${name}.png`;
+			// }
+			// else {
+			// 	spriteData.url += dir + '/' + name + '.png';
+			// }
 		}
 
 		if (!options.noScale) {
@@ -788,6 +829,9 @@ export const Dex = new class implements ModdedDex {
 			spriteData.h *= 1.5;
 			spriteData.y += -11;
 		}
+
+		// Testing
+		console.log('[Sprite Debug] Final URL:', spriteData.url);
 
 		return spriteData;
 	}

@@ -3508,6 +3508,10 @@ export class Battle {
 			if (this.tier.includes(`Legends`)) {
 				this.dex = Dex.mod('gen9legendsou' as ID);
 			}
+			if (this.tier.includes('Rejuvenation')) {
+				(this.scene as BattleScene).mod = 'rejuvenation';
+				this.dex = Dex.mod('rejuvenation' as ID);
+			}
 			this.log(args);
 			break;
 		}
