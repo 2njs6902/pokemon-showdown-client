@@ -747,16 +747,22 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			for (const [resultType, value] of this.baseResults) {
 				if (resultType === this.searchType) legalityFilter[value] = 1;
 			}
+
 			this.baseIllegalResults = [];
 			this.illegalReasons = {};
 
-			// for (const id in this.getTable()) {
-			// 	if (!(id in legalityFilter)) {
-			// 		// this.baseIllegalResults.push([this.searchType, id as ID]);
-			// 		// this.illegalReasons[id] = 'Illegal';
-					
-			// 	}
-			// }
+			if (this.format === 'rejuvenation') {
+				// Do NOT populate illegal lists for this format
+				// Leave both as empty objects/arrays
+			} else {
+				// Default Showdown illegal logic
+				for (const id in this.getTable()) {
+					if (!(id in legalityFilter)) {
+						this.baseIllegalResults.push([this.searchType, id as ID]);
+						this.illegalReasons[id] = 'Illegal';
+					}
+				}
+			}
 		}
 
 		let results: SearchRow[];
