@@ -3510,7 +3510,6 @@ export class Battle {
 			}
 			if (this.tier.includes('Rejuvenation')) {
 				(this.scene as BattleScene).mod = 'rejuvenation';
-				this.dex = Dex.mod('rejuvenation' as ID);
 			}
 			this.log(args);
 			break;

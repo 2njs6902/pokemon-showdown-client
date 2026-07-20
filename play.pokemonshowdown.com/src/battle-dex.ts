@@ -732,7 +732,7 @@ export const Dex = new class implements ModdedDex {
 		if (!Dex.prefs('noanim') && !Dex.prefs('nogif') && spriteData.gen >= 5) {
 
 			// New
-			if (options.mod) {
+			if (options.mod && options.mod !== 'rejuvenation') {
 				let modDir = options.mod;
 				if (!spriteData.isFrontSprite) modDir += '-back';
 				if (options.shiny) modDir += '-shiny';
