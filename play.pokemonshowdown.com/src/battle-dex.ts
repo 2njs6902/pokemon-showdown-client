@@ -732,15 +732,17 @@ export const Dex = new class implements ModdedDex {
 		if (!Dex.prefs('noanim') && !Dex.prefs('nogif') && spriteData.gen >= 5) {
 
 			// New
-			if (options.mod && options.mod !== 'rejuvenation') {
-				let modDir = options.mod;
-				if (!spriteData.isFrontSprite) modDir += '-back';
-				if (options.shiny) modDir += '-shiny';
-				dir = `${modDir}/ani`;
-				spriteData.url = `${this.resourcePrefix}sprites/${dir}/${name}.gif`;
-				spriteData.w = 96;
-				spriteData.h = 96;
-				animatedSprite = true;
+			if (options.mod) {
+				if (options.mod !== 'rejuvenation') {
+					let modDir = options.mod;
+					if (!spriteData.isFrontSprite) modDir += '-back';
+					if (options.shiny) modDir += '-shiny';
+					dir = `${modDir}/ani`;
+					spriteData.url = `${this.resourcePrefix}sprites/${dir}/${name}.gif`;
+					spriteData.w = 96;
+					spriteData.h = 96;
+					animatedSprite = true;
+				}
 			} else {
 				const animationArray: [AnyObject, string][] = [];
 				if (baseDir === '' && window.BattlePokemonSprites) {
@@ -774,7 +776,7 @@ export const Dex = new class implements ModdedDex {
 				let modDir = options.mod;
 				if (!spriteData.isFrontSprite) modDir += '-back';
 				if (options.shiny) modDir += '-shiny';
-				spriteData.url = `${this.resourcePrefix}sprites/${modDir}/${name}.png`;
+				spriteData.url = `sprites/${modDir}/${name}.png`;
 			} else {
 				dir = (baseDir || 'gen5') + dir;
 				spriteData.url += dir + '/' + name + '.png';
