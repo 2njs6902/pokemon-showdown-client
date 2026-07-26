@@ -213,9 +213,10 @@ export interface TeambuilderSpriteData {
 	x: number;
 	y: number;
 	h?: number;
-	spriteDir: string;
-	spriteid: string;
+	spriteDir?: string;
+	spriteid?: string;
 	shiny?: boolean;
+	url?: string;
 }
 
 export const Dex = new class implements ModdedDex {
@@ -912,12 +913,12 @@ export const Dex = new class implements ModdedDex {
 		const currentFormat = toID((window as any).app?.curRoom?.curTeam?.format || '' );
 
 		if (dex.modid === 'rejuvenation' || currentFormat.includes('rejuvenation')) {
+			const shiny = pokemon.shiny ? '-shiny' : '';
+
 			return {
-				spriteDir: 'sprites/rejuvenation',
-				spriteid,
+				url: `sprites/rejuvenation${shiny}/${spriteid}.png`,
 				x: 10,
 				y: 5,
-				shiny: !!pokemon.shiny,
 			};
 		}
 		if (species.exists === false) return { spriteDir: 'sprites/gen5', spriteid: '0', x: 10, y: 5 };
@@ -984,10 +985,13 @@ export const Dex = new class implements ModdedDex {
 
 	getTeambuilderSprite(pokemon: any, dex?: ModdedDex, xOffset = 0, yOffset = 0) {
 		if (!pokemon) return '';
+
 		const data = this.getTeambuilderSpriteData(pokemon, dex);
-		const shiny = (data.shiny ? '-shiny' : '');
-		const resize = (data.h ? `background-size:${data.h}px` : '');
-		return `background-image:url(${Dex.resourcePrefix}${data.spriteDir}${shiny}/${data.spriteid}.png);background-position:${data.x + xOffset}px ${data.y + yOffset}px;background-repeat:no-repeat;${resize}`;
+		const shiny = data.shiny ? '-shiny' : '';
+		const resize = data.h ? `background-size:${data.h}px` : '';
+		const url = data.url ?? `${Dex.resourcePrefix}${data.spriteDir}${shiny}/${data.spriteid}.png`;
+
+		return `background-image:url(${url});background-position:${data.x + xOffset}px ${data.y + yOffset}px;background-repeat:no-repeat;${resize}`;
 	}
 
 	getItemIcon(item: any) {
@@ -999,12 +1003,29 @@ export const Dex = new class implements ModdedDex {
 		let left = (num % 16) * 24;
 		return `background:transparent url(${Dex.resourcePrefix}sprites/itemicons-sheet.png?v1) no-repeat scroll -${left}px -${top}px`;
 	}
+	getCustomTypeIconDir(format: string, modid: string) {
+		const formatid = toID(format);
 
-	getTypeIcon(type: string | null, b?: boolean) { // b is just for utilichart.js
+		if (modid === 'rejuvenation' || formatid.includes('rejuvenation')) {
+			return 'sprites/rejuvenationtypes';
+		}
+
+		return '';
+	}
+	getTypeIcon(type: string | null, b?: boolean) {
 		type = this.types.get(type).name;
 		if (!type) type = '???';
-		let sanitizedType = type.replace(/\?/g, '%3f');
-		return `<img src="${Dex.resourcePrefix}sprites/types/${sanitizedType}.png" alt="${type}" height="14" width="32" class="pixelated${b ? ' b' : ''}" />`;
+
+		const currentFormat = toID((window as any).app?.curRoom?.curTeam?.format || '');
+		const isRejuvenation =
+			this.modid.includes('rejuvenation') ||
+			currentFormat.includes('rejuvenation');
+
+		const sanitizedType = type.replace(/\?/g, '%3f');
+		const spriteDir = isRejuvenation ? 'sprites/rejuvenationtypes' : 'sprites/types';
+		const prefix = isRejuvenation ? '' : Dex.resourcePrefix;
+
+		return `<img src="${prefix}${spriteDir}/${sanitizedType}.png" alt="${type}" height="14" width="32" class="pixelated${b ? ' b' : ''}" />`;
 	}
 
 	getCategoryIcon(category: string | null) {
