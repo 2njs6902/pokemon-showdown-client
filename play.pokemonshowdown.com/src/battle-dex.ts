@@ -239,9 +239,8 @@ export const Dex = new class implements ModdedDex {
 	pokeballs: string[] | null = null;
 	
 	resourcePrefix = (() => {
-		let prefix = '';
-		if (window.document?.location?.protocol !== 'http:') prefix = 'https:';
-		return `${prefix}//${window.Config ? Config.routes.client : 'play.pokemonshowdown.com'}/`;
+		if (window.Config?.routes?.client) return `//${Config.routes.client}/`;
+		return `${window.location.origin}/`;
 	})();
 
 	fxPrefix = (() => {
@@ -908,6 +907,18 @@ export const Dex = new class implements ModdedDex {
 			if (pokemon.species && !spriteid) {
 				spriteid = species.spriteid || id;
 			}
+		}
+		
+		const currentFormat = toID((window as any).app?.curRoom?.curTeam?.format || '' );
+
+		if (dex.modid === 'rejuvenation' || currentFormat.includes('rejuvenation')) {
+			return {
+				spriteDir: 'sprites/rejuvenation',
+				spriteid,
+				x: 10,
+				y: 5,
+				shiny: !!pokemon.shiny,
+			};
 		}
 		if (species.exists === false) return { spriteDir: 'sprites/gen5', spriteid: '0', x: 10, y: 5 };
 		if (Dex.afdMode) {
