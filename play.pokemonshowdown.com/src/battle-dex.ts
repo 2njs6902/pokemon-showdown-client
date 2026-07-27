@@ -292,6 +292,10 @@ export const Dex = new class implements ModdedDex {
 		if (dex.gen === 9 && formatid.includes('legends')) {
 			dex = Dex.mod('gen9legendsou' as ID);
 		}
+		if (dex.gen === 9 && formatid.includes('rejuvenation')) {
+			dex = Dex.mod('gen9rejuvenation' as ID);
+		}
+
 		return dex;
 	}
 
@@ -1012,17 +1016,22 @@ export const Dex = new class implements ModdedDex {
 
 		return '';
 	}
-	getTypeIcon(type: string | null, b?: boolean) {
+	getTypeIcon(type: string | null, b?: boolean, modid?: string) {
 		type = this.types.get(type).name;
 		if (!type) type = '???';
 
 		const currentFormat = toID((window as any).app?.curRoom?.curTeam?.format || '');
+
 		const isRejuvenation =
+			modid?.includes('rejuvenation') ||
 			this.modid.includes('rejuvenation') ||
 			currentFormat.includes('rejuvenation');
 
 		const sanitizedType = type.replace(/\?/g, '%3f');
-		const spriteDir = isRejuvenation ? 'sprites/rejuvenationtypes' : 'sprites/types';
+		const spriteDir = isRejuvenation
+			? 'sprites/rejuvenationtypes'
+			: 'sprites/types';
+
 		const prefix = isRejuvenation ? '' : Dex.resourcePrefix;
 
 		return `<img src="${prefix}${spriteDir}/${sanitizedType}.png" alt="${type}" height="14" width="32" class="pixelated${b ? ' b' : ''}" />`;
@@ -1253,6 +1262,9 @@ export class ModdedDex {
 			return data;
 		},
 	};
+	getTypeIcon(type: string | null, b?: boolean) : string{
+		return Dex.getTypeIcon(type, b, this.modid);
+	}
 
 	getPokeballs() {
 		if (this.pokeballs) return this.pokeballs;

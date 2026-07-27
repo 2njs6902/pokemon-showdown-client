@@ -548,6 +548,15 @@ export class BattleTooltips {
 		return this.battle.dex.moves.get(BattleTooltips.maxMoveTable[type]);
 	}
 
+	getTypeIcon(type: string) {
+		return Dex.getTypeIcon(
+			type,
+			false,
+			this.battle.tier.includes('Rejuvenation') ? 'gen9rejuvenation' as ID : undefined
+		);
+	}
+
+
 	showMoveTooltip(
 		move: Dex.Move, isZOrMax: string, pokemon: Pokemon, serverPokemon: ServerPokemon, gmaxMove?: Dex.Move
 	) {
@@ -635,7 +644,16 @@ export class BattleTooltips {
 
 		text += `<h2>${move.name}<br />`;
 
-		text += Dex.getTypeIcon(moveType);
+		console.log(
+			'TOOLTIP DEX:',
+			this.battle.dex.modid,
+			'MOVE TYPE:',
+			moveType,
+			'ICON:',
+			this.battle.dex.getTypeIcon(moveType)
+		);
+
+		text += Dex.getTypeIcon(moveType, false, this.battle.tier.includes('Rejuvenation') ? 'gen9rejuvenation' as ID : undefined);
 		text += ` ${Dex.getCategoryIcon(category)}</h2>`;
 
 		// Check if there are more than one active Pokémon to check for multiple possible BPs.
@@ -693,7 +711,7 @@ export class BattleTooltips {
 				calls = 'Swift';
 			}
 			let calledMove = this.battle.dex.moves.get(calls);
-			text += `Calls ${Dex.getTypeIcon(this.getMoveType(calledMove, value)[0])} ${calledMove.name}`;
+			text += `Calls ${this.battle.dex.getTypeIcon(this.getMoveType(calledMove, value)[0])} ${calledMove.name}`;
 		}
 
 		text += `<p>Accuracy: ${accuracy}</p>`;
@@ -857,11 +875,11 @@ export class BattleTooltips {
 			} else if (clientPokemon?.volatiles.typechange || clientPokemon?.volatiles.typeadd) {
 				text += `<small>(Type changed)</small><br />`;
 			}
-			text += `<span class="textaligned-typeicons">${types.map(type => Dex.getTypeIcon(type)).join(' ')}</span>`;
+			text += `<span class="textaligned-typeicons">${types.map(type => Dex.getTypeIcon(type, false, this.battle.tier.includes('Rejuvenation') ? 'gen9rejuvenation' as ID : undefined)).join(' ')}</span>`;
 			if (pokemon.terastallized) {
-				text += `&nbsp; &nbsp; <small>(base: <span class="textaligned-typeicons">${this.getPokemonTypes(pokemon, true).map(type => Dex.getTypeIcon(type)).join(' ')}</span>)</small>`;
+				text += `&nbsp; &nbsp; <small>(base: <span class="textaligned-typeicons">${this.getPokemonTypes(pokemon, true).map(type => this.getTypeIcon(type)).join(' ')}</span>)</small>`;
 			} else if (knownPokemon.teraType && !this.battle.rules['Terastal Clause']) {
-				text += `&nbsp; &nbsp; <small>(Tera Type: <span class="textaligned-typeicons">${Dex.getTypeIcon(knownPokemon.teraType)}</span>)</small>`;
+				text += `&nbsp; &nbsp; <small>(Tera Type: <span class="textaligned-typeicons">${this.getTypeIcon(knownPokemon.teraType)}</span>)</small>`;
 			}
 			text += `</h2>`;
 		}
