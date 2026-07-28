@@ -997,54 +997,22 @@ export const Dex = new class implements ModdedDex {
 
 		return `background-image:url(${url});background-position:${data.x + xOffset}px ${data.y + yOffset}px;background-repeat:no-repeat;${resize}`;
 	}
-
-	isCustomItemIcon(itemid: ID) {
-			const customItems = new Set<ID>([
-					'syntheticseed' as ID,
-					'talonflamecrest' as ID,
-					'charizardcrest' as ID,
-			]);
-
-			return customItems.has(itemid);
-	}
-
 	getItemIcon(item: any) {
-			let itemid = '' as ID;
-			let itemData = item;
+		let itemid = '' as ID;
 
-			if (typeof item === 'string') {
-					itemid = toID(item);
+		if (typeof item === 'string') {
+			itemid = toID(item);
+		} else if (item) {
+			itemid = toID(item.id || item.name);
+		}
 
-					if (window.BattleItems) {
-							itemData = window.BattleItems[itemid];
-					}
-			} else if (item) {
-					itemid = toID(item.id || item.name);
-			}
-
-			if (itemid && this.isCustomItemIcon(itemid)) {
-					const url =
-							`${Dex.resourcePrefix}sprites/itemicons/${itemid}.png`;
-
-					return [
-							'background-color:transparent',
-							`background-image:url(${url})`,
-							'background-position:center',
-							'background-repeat:no-repeat',
-							'background-size:24px 24px',
-					].join(';');
-			}
-
-			const num = itemData?.spritenum || 0;
-			const top = Math.floor(num / 16) * 24;
-			const left = (num % 16) * 24;
-
-			return [
-					'background-color:transparent',
-					`background-image:url(${Dex.resourcePrefix}sprites/itemicons-sheet.png?v1)`,
-					`background-position:-${left}px -${top}px`,
-					'background-repeat:no-repeat',
-			].join(';');
+		return [
+			'background-color:transparent',
+			`background-image:url(sprites/itemicons/${itemid}.png)`,
+			'background-position:center',
+			'background-repeat:no-repeat',
+			'background-size:24px 24px',
+		].join(';');
 	}
 	getCustomTypeIconDir(format: string, modid: string) {
 		const formatid = toID(format);
