@@ -4,11 +4,15 @@
 import fs from 'node:fs';
 import imageSize from 'image-size';
 
+<<<<<<< Updated upstream
 import dexModule from '../caches/pokemon-showdown/dist/sim/dex.js';
 
 process.chdir(import.meta.dirname + '/..');
 
 const { Dex } = dexModule;
+=======
+const Dex = require('C:/Users/2njs/Projects/Github/pokemon-showdown/dist/sim/dex').Dex;
+>>>>>>> Stashed changes
 const toID = Dex.toID;
 
 process.stdout.write("Updating animated sprite dimensions... ");

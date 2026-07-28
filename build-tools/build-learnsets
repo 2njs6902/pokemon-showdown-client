@@ -15,10 +15,14 @@ import fs from 'node:fs';
 
 import dexModule from '../caches/pokemon-showdown/dist/sim/dex.js';
 
+<<<<<<< Updated upstream
 process.chdir(import.meta.dirname + '/..');
 
 const thisFile = 'build-tools/build-learnsets';
 const { Dex } = dexModule;
+=======
+const Dex = require('C:/Users/2njs/Projects/Github/pokemon-showdown/dist/sim/dex').Dex;
+>>>>>>> Stashed changes
 const toID = Dex.toID;
 
 function updateLearnsets(callback) {

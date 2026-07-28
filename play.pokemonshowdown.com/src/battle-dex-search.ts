@@ -647,10 +647,16 @@ abstract class BattleTypedSearch<T extends SearchType> {
 	 */
 	set: Dex.PokemonSet | null = null;
 
+<<<<<<< Updated upstream
 	protected formatType: 'doubles' | 'bdsp' | 'bdspdoubles' | 'rs' | 'frlg' | 'bw1' | 'letsgo' | 'metronome' | 'natdex' |
 		'nfe' | 'ssdlc1' | 'ssdlc1doubles' | 'predlc' | 'predlcdoubles' | 'svdlc1' | 'svdlc1doubles' | 'stadium' | 'lc' |
 		'champions' | 'natdexchampions' | null = null;
 	isDoubles = false;
+=======
+	protected formatType: 'doubles' | 'bdsp' | 'bdspdoubles' | 'rs' | 'bw1' | 'letsgo' | 'metronome' | 'natdex' | 'nfe' |
+		'ssdlc1' | 'ssdlc1doubles' | 'predlc' | 'predlcdoubles' | 'predlcnatdex' | 'svdlc1' | 'svdlc1doubles' |
+		'svdlc1natdex' | 'stadium' | 'lc' | 'rejuvenation' | null = null;
+>>>>>>> Stashed changes
 
 	/**
 	 * Cached copy of what the results list would be with only base filters
@@ -713,6 +719,7 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			format = format.slice(7) as ID;
 			if (!format) format = 'ou' as ID;
 		}
+<<<<<<< Updated upstream
 		if (format.includes('champions')) {
 			this.formatType = 'champions';
 			this.dex = Dex.mod('champions' as ID);
@@ -732,6 +739,17 @@ abstract class BattleTypedSearch<T extends SearchType> {
 		}
 		if (format.startsWith('vgc2023')) {
 			this.formatType = format.endsWith('rege') ? 'svdlc1doubles' : 'predlcdoubles';
+=======
+		if (format.startsWith('vgc')) this.formatType = 'doubles';
+		if (format === 'vgc2020') this.formatType = 'ssdlc1doubles';
+		if (format === 'vgc2023regulationd') this.formatType = 'predlcdoubles';
+		if (format === 'vgc2023regulatione') this.formatType = 'svdlc1doubles';
+		if (format.startsWith('rejuvenation')) {
+			this.formatType = 'rejuvenation';
+			this.dex = Dex.mod('gen9rejuvenation' as ID);
+			format = format.slice('rejuvenation'.length) as ID;
+			if (!format) format = 'anythinggoes' as ID;
+>>>>>>> Stashed changes
 		}
 		if (format.includes('bdsp')) {
 			if (format.includes('doubles')) {
@@ -884,9 +902,13 @@ abstract class BattleTypedSearch<T extends SearchType> {
 		if (this.formatType === 'letsgo') table = table['gen7letsgo'];
 		if (this.formatType === 'bw1') table = table['gen5bw1'];
 		if (this.formatType === 'rs') table = table['gen3rs'];
+<<<<<<< Updated upstream
 		if (this.formatType === 'frlg') table = table['gen3frlg'];
 		if (this.formatType === 'champions') table = table['champions'];
 		if (this.formatType === 'natdexchampions') table = table['natdexchampions'];
+=======
+		if (this.formatType === 'rejuvenation') table = table['rejuvenation'];
+>>>>>>> Stashed changes
 		if (speciesid in table.learnsets) return speciesid;
 		const species = this.dex.species.get(speciesid);
 		if (!species.exists) return '' as ID;
@@ -956,9 +978,13 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			if (this.formatType === 'letsgo') table = table['gen7letsgo'];
 			if (this.formatType === 'bw1') table = table['gen5bw1'];
 			if (this.formatType === 'rs') table = table['gen3rs'];
+<<<<<<< Updated upstream
 			if (this.formatType === 'frlg') table = table['gen3frlg'];
 			if (this.formatType === 'champions') table = table['champions'];
 			if (this.formatType === 'natdexchampions') table = table['natdexchampions'];
+=======
+			if (this.formatType === 'rejuvenation') table = table['rejuvenation'];
+>>>>>>> Stashed changes
 			let learnset = table.learnsets[learnsetid];
 			const eggMovesOnly = this.eggMovesOnly(learnsetid, speciesid);
 			if (learnset && (moveid in learnset) && (!this.format.startsWith('tradebacks') ? learnset[moveid].includes(genChar) :
@@ -994,24 +1020,32 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			this.formatType === 'svdlc1doubles' ? 'gen9dlc1doubles' :
 			this.formatType === 'natdex' ? `gen${gen}natdex` :
 			this.formatType === 'stadium' ? `gen${gen}stadium${gen > 1 ? gen : ''}` :
+<<<<<<< Updated upstream
 			this.formatType === 'champions' ? `champions` :
 			this.formatType === 'natdexchampions' ? `natdexchampions` :
+=======
+			this.formatType === 'rejuvenation' ? '' :
+>>>>>>> Stashed changes
 			`gen${gen}`;
-		if (table?.[tableKey]) {
+		if (tableKey && table?.[tableKey]) {
 			table = table[tableKey];
 		}
 		if (!table) return pokemon.tier;
 
 		let id = pokemon.id;
-		if (id in table.overrideTier) {
-			return table.overrideTier[id];
+		const overrideTier = table.overrideTier;
+
+		if (overrideTier && id in overrideTier) {
+			return overrideTier[id];
 		}
-		if (id.endsWith('totem') && id.slice(0, -5) in table.overrideTier) {
-			return table.overrideTier[id.slice(0, -5)];
+
+		if (overrideTier && id.endsWith('totem') && id.slice(0, -5) in overrideTier) {
+			return overrideTier[id.slice(0, -5)];
 		}
+
 		id = toID(pokemon.baseSpecies);
-		if (id in table.overrideTier) {
-			return table.overrideTier[id];
+		if (overrideTier && id in overrideTier) {
+			return overrideTier[id];
 		}
 
 		return pokemon.tier;
@@ -1159,6 +1193,8 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 			}
 		} else if (this.formatType === 'stadium') {
 			table = table[`gen${dex.gen}stadium${dex.gen > 1 ? dex.gen : ''}`];
+		} else if (this.formatType === 'rejuvenation') {
+			table = BattleTeambuilderTable;
 		}
 
 		if (!table.tierSet) {

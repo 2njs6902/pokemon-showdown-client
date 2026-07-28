@@ -846,7 +846,23 @@ export const Dex = new class implements ModdedDex {
 				spriteid = species.spriteid || id;
 			}
 		}
+<<<<<<< Updated upstream
 		if (species.exists === false) return { spriteDir: 'sprites/gen5', spriteid: '0', x: 10, y: 5, pixelated: true };
+=======
+		
+		const currentFormat = toID((window as any).app?.curRoom?.curTeam?.format || '' );
+
+		if (dex.modid === 'gen9rejuvenation' || currentFormat.includes('rejuvenation')) {
+			const shiny = pokemon.shiny ? '-shiny' : '';
+
+			return {
+				url: `sprites/rejuvenation${shiny}/${spriteid}.png`,
+				x: 10,
+				y: 5,
+			};
+		}
+		if (species.exists === false) return { spriteDir: 'sprites/gen5', spriteid: '0', x: 10, y: 5 };
+>>>>>>> Stashed changes
 		if (Dex.afdMode) {
 			return {
 				spriteid,
@@ -980,6 +996,7 @@ export class ModdedDex {
 		if ((modid !== 'champions' && !modid.startsWith('gen')) || !gen) throw new Error("Unsupported modid");
 		this.gen = gen;
 	}
+
 	moves = {
 		get: (name: string): Move => {
 			let id = toID(name);
@@ -998,8 +1015,11 @@ export class ModdedDex {
 				}
 			}
 			if (this.modid !== `gen${this.gen}`) {
-				const table = window.BattleTeambuilderTable[this.modid];
-				if (id in table.overrideMoveData) {
+				const table = window.BattleTeambuilderTable[
+					this.modid === 'gen9rejuvenation' ? 'rejuvenation' : this.modid
+				];
+
+				if (table?.overrideMoveData && id in table.overrideMoveData) {
 					Object.assign(data, table.overrideMoveData[id]);
 				}
 			}
@@ -1031,8 +1051,11 @@ export class ModdedDex {
 				}
 			}
 			if (this.modid !== `gen${this.gen}`) {
-				const table = window.BattleTeambuilderTable[this.modid];
-				if (id in table.overrideItemData) {
+				const table = window.BattleTeambuilderTable[
+					this.modid === 'gen9rejuvenation' ? 'rejuvenation' : this.modid
+				];
+
+				if (table?.overrideItemData && id in table.overrideItemData) {
 					Object.assign(data, table.overrideItemData[id]);
 				}
 			}
@@ -1061,8 +1084,11 @@ export class ModdedDex {
 				}
 			}
 			if (this.modid !== `gen${this.gen}`) {
-				const table = window.BattleTeambuilderTable[this.modid];
-				if (id in table.overrideAbilityData) {
+				const table = window.BattleTeambuilderTable[
+					this.modid === 'gen9rejuvenation' ? 'rejuvenation' : this.modid
+				];
+
+				if (table?.overrideAbilityData && id in table.overrideAbilityData) {
 					Object.assign(data, table.overrideAbilityData[id]);
 				}
 			}
@@ -1094,8 +1120,11 @@ export class ModdedDex {
 				}
 			}
 			if (this.modid !== `gen${this.gen}`) {
-				const table = window.BattleTeambuilderTable[this.modid];
-				if (id in table.overrideSpeciesData) {
+				const table = window.BattleTeambuilderTable[
+					this.modid === 'gen9rejuvenation' ? 'rejuvenation' : this.modid
+				];
+
+				if (table?.overrideSpeciesData && id in table.overrideSpeciesData) {
 					Object.assign(data, table.overrideSpeciesData[id]);
 				}
 			}
@@ -1103,8 +1132,16 @@ export class ModdedDex {
 				data.abilities = { 0: "No Ability" };
 			}
 
-			const table = window.BattleTeambuilderTable[this.modid];
-			if (id in table.overrideTier) data.tier = table.overrideTier[id];
+			const table = window.BattleTeambuilderTable[
+				this.modid === 'gen9rejuvenation' ? 'rejuvenation' : this.modid
+			];
+
+			const overrideTier =
+				table?.overrideTier ?? window.BattleTeambuilderTable.overrideTier;
+
+			if (overrideTier && id in overrideTier) {
+				data.tier = overrideTier[id];
+			}
 			if (!data.tier && id.endsWith('totem')) {
 				data.tier = this.species.get(id.slice(0, -5)).tier;
 			}
