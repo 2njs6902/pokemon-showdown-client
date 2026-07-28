@@ -24,6 +24,7 @@ const CompoundWordNames = require('../caches/pokemon-showdown/dist/data/aliases'
 const toID = Dex.toID;
 process.stdout.write("Loading gen 6 data... ");
 Dex.includeData();
+Dex.includeMods();
 console.log("DONE");
 
 function es3stringify(obj) {
@@ -252,6 +253,13 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 
 {
 	const BattleTeambuilderTable = {};
+	BattleTeambuilderTable.rejuvenation = {
+		learnsets: {},
+		tiers: [],
+		items: [],
+		overrideTier: {},
+		formatSlices: {},
+	};
 
 	let buf = '// DO NOT EDIT - automatically built with build-tools/build-indexes\n\n';
 	const GENS = [9, 8, 7, 6, 5, 4, 3, 2, 1];
@@ -261,12 +269,15 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 	const LC = GENS.map(num => num + 0.7);
 	const STADIUM = [2.04, 1.04];
 	const NATDEX = [9.1, 8.1];
+	// 68 = natdex champs
+	// const CHAMPIONS = [9.67, 9.68];
+	const CHAMPIONS = [];
 	const OTHER = [
 		9.9, 9.6, 9.411, 9.41, 9.401, 9.4, 9.33, 9.2, -9.4, -9.401,
 		8.6, 8.4, 8.2, 8.1, -8.4, -8.6,
 		7.1,
 		5.1,
-		3.1,
+		3.1, //3.11,
 	];
 
 	// process.stdout.write("\n  ");
@@ -921,6 +932,17 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		items.push(...unreleasedItems);
 	}
 
+
+	BattleTeambuilderTable.rejuvenation.tiers = BattleTeambuilderTable.tiers;
+
+	BattleTeambuilderTable.rejuvenation.items = BattleTeambuilderTable.items;
+
+	BattleTeambuilderTable.rejuvenation.overrideTier = BattleTeambuilderTable.overrideTier;
+
+	BattleTeambuilderTable.rejuvenation.metagameBans = BattleTeambuilderTable.metagameBans;
+
+	BattleTeambuilderTable.rejuvenation.formatSlices = BattleTeambuilderTable.formatSlices;
+
 	//
 	// Learnset table
 	//
@@ -976,6 +998,45 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			if (gens.indexOf(9) >= 0 && learnset[moveid].some(x => x === '9E')) learnsets[id][moveid] += 'e';
 		}
 	}
+	// Rejuvenation learnset table
+	const RejuvenationLearnsets = Dex.mod('rejuvenation').data.Learnsets;
+
+	for (const id in RejuvenationLearnsets) {
+		const learnset = RejuvenationLearnsets[id].learnset;
+		if (!learnset) continue;
+
+		BattleTeambuilderTable.rejuvenation.learnsets[id] = {};
+
+		for (const moveid in learnset) {
+			const sources = learnset[moveid];
+			const gens = sources.map(source => Number(source[0]));
+			const minGen = Math.min(...gens);
+
+			let legalGens = '0123456789'.slice(minGen);
+
+			if (gens.includes(6)) {
+				legalGens += 'p';
+			}
+
+			if (gens.includes(7) && sources.some(source => source[0] === '7' && source !== '7V')) {
+				legalGens += 'q';
+			}
+
+			if (gens.includes(8) && sources.some(source => source[0] === '8' && source !== '8V')) {
+				legalGens += 'g';
+			}
+
+			if (gens.includes(9) &&sources.some(source => source[0] === '9' && source !== '9V')) {
+				legalGens += 'a';
+			}
+
+			if (sources.some(source => source === '9E')) {
+				legalGens += 'e';
+			}
+
+			BattleTeambuilderTable.rejuvenation.learnsets[id][moveid] = legalGens;
+		}
+	}
 	const G2Learnsets = Dex.mod('gen2').data.Learnsets;
 	for (const id in G2Learnsets) {
 		const learnset = G2Learnsets[id].learnset;
@@ -1000,6 +1061,17 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			BattleTeambuilderTable['gen3rs'].learnsets[id][moveid] = '3';
 		}
 	}
+	// const G3FRLGLearnsets = Dex.mod('gen3frlg').data.Learnsets;
+	// for (const id in G3FRLGLearnsets) {
+	// 	const species = Dex.mod('gen3frlg').species.get(id);
+	// 	if (species.isNonstandard && !['Unobtainable', 'CAP'].includes(species.isNonstandard)) continue;
+	// 	const learnset = G3FRLGLearnsets[id].learnset;
+	// 	if (!learnset) continue;
+	// 	BattleTeambuilderTable['gen3frlg'].learnsets[id] = {};
+	// 	for (const moveid in learnset) {
+	// 		BattleTeambuilderTable['gen3frlg'].learnsets[id][moveid] = '3';
+	// 	}
+	// }
 	const G5BW1Learnsets = Dex.mod('gen5bw1').data.Learnsets;
 	for (const id in G5BW1Learnsets) {
 		const species = Dex.mod('gen5bw1').species.get(id);
@@ -1033,6 +1105,32 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			BattleTeambuilderTable['gen8bdsp'].learnsets[id][moveid] = '8g';
 		}
 	}
+	// const ChampionsLearnsets = Dex.mod('champions').data.Learnsets;
+	// for (const id in ChampionsLearnsets) {
+	// 	const species = Dex.mod('champions').species.get(id);
+	// 	if (species.isNonstandard) continue;
+	// 	const learnset = ChampionsLearnsets[id].learnset;
+	// 	if (!learnset) continue;
+	// 	BattleTeambuilderTable['champions'].learnsets[id] = {};
+	// 	for (const moveid in learnset) {
+	// 		BattleTeambuilderTable['champions'].learnsets[id][moveid] = '9a';
+	// 	}
+	// // }
+	// for (const id in learnsets) {
+	// 	BattleTeambuilderTable['natdexchampions'].learnsets[id] = { ...learnsets[id] };
+	// 	const species = Dex.mod('champions').species.get(id);
+	// 	if (species.isNonstandard) continue;
+	// 	const learnset = ChampionsLearnsets[id].learnset;
+	// 	if (!learnset) continue;
+	// 	for (const moveid in learnset) {
+	// 		if (moveid in BattleTeambuilderTable['natdexchampions'].learnsets[id]) {
+	// 			if (BattleTeambuilderTable['natdexchampions'].learnsets[id][moveid].includes('9')) continue;
+	// 			BattleTeambuilderTable['natdexchampions'].learnsets[id][moveid] += '9a';
+	// 		} else {
+	// 			BattleTeambuilderTable['natdexchampions'].learnsets[id][moveid] = '9a';
+	// 		}
+	// 	}
+	// }
 	const SSDLC1Learnsets = Dex.mod('gen8dlc1').data.Learnsets;
 	for (const id in SSDLC1Learnsets) {
 		const learnset = SSDLC1Learnsets[id].learnset;
@@ -1312,7 +1410,16 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 	// Mods
 	//
 
-	for (const mod of ['gen3rs', 'gen5bw1', 'gen7letsgo', 'gen8bdsp', 'gen9ssb', 'gen9legendsou']) {
+	for (const mod of [
+		'gen3rs', 
+		// 'gen3frlg', 
+		'gen5bw1', 
+		'gen7letsgo', 
+		'gen8bdsp', 
+		'gen9ssb', 
+		// 'champions', 
+		'rejuvenation',
+	]) {
 		const modDex = Dex.mod(mod);
 		const modData = modDex.data;
 		const parentDex = Dex.forGen(modDex.gen);
