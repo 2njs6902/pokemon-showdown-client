@@ -665,9 +665,9 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			this.formatType = 'letsgo';
 			this.dex = Dex.mod('gen7letsgo' as ID);
 		}
-		if (format.includes('rejuvenation')) {
-			this.formatType = 'natdex';
-		}
+		// if (format.includes('rejuvenation')) {
+		// 	this.dex = Dex.mod('rejuvenation' as ID);
+		// }
 		if (format.includes('nationaldex') || format.startsWith('nd') || format.includes('natdex')) {
 			format = (format.startsWith('nd') ? format.slice(2) :
 				format.includes('natdex') ? format.slice(6) : format.slice(11)) as ID;
@@ -880,28 +880,34 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			return pokemon.num >= 0 ? String(pokemon.num) : pokemon.tier;
 		}
 		let table = window.BattleTeambuilderTable;
-		const gen = this.dex.gen;
-		const tableKey = this.formatType === 'doubles' ? `gen${gen}doubles` :
-			this.formatType === 'letsgo' ? 'gen7letsgo' :
-			this.formatType === 'bdsp' ? 'gen8bdsp' :
-			this.formatType === 'bdspdoubles' ? 'gen8bdspdoubles' :
-			this.formatType === 'bw1' ? 'gen5bw1' :
-			this.formatType === 'rs' ? 'gen3rs' :
-			this.formatType === 'nfe' ? `gen${gen}nfe` :
-			this.formatType === 'lc' ? `gen${gen}lc` :
-			this.formatType === 'ssdlc1' ? 'gen8dlc1' :
-			this.formatType === 'ssdlc1doubles' ? 'gen8dlc1doubles' :
-			this.formatType === 'predlc' ? 'gen9predlc' :
-			this.formatType === 'predlcdoubles' ? 'gen9predlcdoubles' :
-			this.formatType === 'predlcnatdex' ? 'gen9predlcnatdex' :
-			this.formatType === 'svdlc1' ? 'gen9dlc1' :
-			this.formatType === 'svdlc1doubles' ? 'gen9dlc1doubles' :
-			this.formatType === 'svdlc1natdex' ? 'gen9dlc1natdex' :
-			this.formatType === 'natdex' ? `gen${gen}natdex` :
-			this.formatType === 'stadium' ? `gen${gen}stadium${gen > 1 ? gen : ''}` :
-			`gen${gen}`;
-		if (table?.[tableKey]) {
-			table = table[tableKey];
+
+		if (this.format.includes('rejuvenation')) {
+			table = table.rejuvenation;
+		} else {
+			const gen = this.dex.gen;
+			const tableKey = this.formatType === 'doubles' ? `gen${gen}doubles` :
+				this.formatType === 'letsgo' ? 'gen7letsgo' :
+				this.formatType === 'bdsp' ? 'gen8bdsp' :
+				this.formatType === 'bdspdoubles' ? 'gen8bdspdoubles' :
+				this.formatType === 'bw1' ? 'gen5bw1' :
+				this.formatType === 'rs' ? 'gen3rs' :
+				this.formatType === 'nfe' ? `gen${gen}nfe` :
+				this.formatType === 'lc' ? `gen${gen}lc` :
+				this.formatType === 'ssdlc1' ? 'gen8dlc1' :
+				this.formatType === 'ssdlc1doubles' ? 'gen8dlc1doubles' :
+				this.formatType === 'predlc' ? 'gen9predlc' :
+				this.formatType === 'predlcdoubles' ? 'gen9predlcdoubles' :
+				this.formatType === 'predlcnatdex' ? 'gen9predlcnatdex' :
+				this.formatType === 'svdlc1' ? 'gen9dlc1' :
+				this.formatType === 'svdlc1doubles' ? 'gen9dlc1doubles' :
+				this.formatType === 'svdlc1natdex' ? 'gen9dlc1natdex' :
+				this.formatType === 'natdex' ? `gen${gen}natdex` :
+				this.formatType === 'stadium' ? `gen${gen}stadium${gen > 1 ? gen : ''}` :
+				`gen${gen}`;
+
+			if (table?.[tableKey]) {
+				table = table[tableKey];
+			}
 		}
 		if (!table) return pokemon.tier;
 
@@ -995,7 +1001,9 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 		const dex = this.dex;
 
 		let table = BattleTeambuilderTable;
-		if ((format.endsWith('cap') || format.endsWith('caplc')) && dex.gen < 9) {
+		if (format.includes('rejuvenation')) {
+			table = table.rejuvenation;
+		} else if ((format.endsWith('cap') || format.endsWith('caplc')) && dex.gen < 9) {
 			table = table[`gen${dex.gen}`];
 		} else if (isVGCOrBS) {
 			table = table[`gen${dex.gen}vgc`];
@@ -1067,6 +1075,11 @@ class BattlePokemonSearch extends BattleTypedSearch<'pokemon'> {
 		}
 		let tierSet: SearchRow[] = table.tierSet;
 		let slices: { [k: string]: number } = table.formatSlices;
+
+		if (format.includes('rejuvenation')) {
+			return tierSet;
+		}
+
 		if (format === 'ubers' || format === 'uber' || format === 'ubersuu' || format === 'nationaldexdoubles') {
 			tierSet = tierSet.slice(slices.Uber);
 		} else if (isVGCOrBS || (isHackmons && dex.gen === 9 && !this.formatType)) {
@@ -1325,7 +1338,10 @@ class BattleItemSearch extends BattleTypedSearch<'item'> {
 	}
 	getDefaultResults(): SearchRow[] {
 		let table = BattleTeambuilderTable;
-		if (this.formatType?.startsWith('bdsp')) {
+
+		if (this.format.includes('rejuvenation')) {
+			table = table.rejuvenation;
+		} else if (this.formatType?.startsWith('bdsp')) {
 			table = table['gen8bdsp'];
 		} else if (this.formatType === 'bw1') {
 			table = table['gen5bw1'];

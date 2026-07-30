@@ -933,15 +933,46 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 	}
 
 
-	BattleTeambuilderTable.rejuvenation.tiers = BattleTeambuilderTable.tiers;
+	const rejuvenationDex = Dex.mod('rejuvenation');
 
-	BattleTeambuilderTable.rejuvenation.items = BattleTeambuilderTable.items;
+	const rejuvenationTiers = [
+		['header', "Pokémon"],
+	];
 
-	BattleTeambuilderTable.rejuvenation.overrideTier = BattleTeambuilderTable.overrideTier;
+	const rejuvenationOverrideTier = {};
 
-	BattleTeambuilderTable.rejuvenation.metagameBans = BattleTeambuilderTable.metagameBans;
+	const rejuvenationPokemon = Object.keys(rejuvenationDex.data.Pokedex);
+	rejuvenationPokemon.sort();
 
-	BattleTeambuilderTable.rejuvenation.formatSlices = BattleTeambuilderTable.formatSlices;
+	for (const id of rejuvenationPokemon) {
+		const species = rejuvenationDex.species.get(id);
+
+		if (!species.exists || species.isCosmeticForme) continue;
+
+		rejuvenationTiers.push(id);
+		rejuvenationOverrideTier[id] = species.tier || 'Legal';
+	}
+
+	const rejuvenationItems = [
+		['header', "Items"],
+	];
+
+	const rejuvenationItemIds = Object.keys(rejuvenationDex.data.Items);
+	rejuvenationItemIds.sort();
+
+	for (const id of rejuvenationItemIds) {
+		const item = rejuvenationDex.items.get(id);
+
+		if (!item.exists) continue;
+
+		rejuvenationItems.push(id);
+	}
+
+	BattleTeambuilderTable.rejuvenation.tiers = rejuvenationTiers;
+	BattleTeambuilderTable.rejuvenation.items = rejuvenationItems;
+	BattleTeambuilderTable.rejuvenation.overrideTier = rejuvenationOverrideTier;
+	BattleTeambuilderTable.rejuvenation.metagameBans = {};
+	BattleTeambuilderTable.rejuvenation.formatSlices = {};
 
 	//
 	// Learnset table
