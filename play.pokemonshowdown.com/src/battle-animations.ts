@@ -152,7 +152,8 @@ export class BattleScene implements BattleSceneStub {
 		this.$battle = $('<div class="innerbattle"></div>');
 		this.$frame.append(this.$battle);
 
-		this.$bg = $('<div class="backdrop" style="background-image:url(' + Dex.resourcePrefix + this.backdropImage + ');display:block;opacity:0.8"></div>');
+		console.log(`<div class="backdrop" style="background-image:url(/${this.backdropImage});display:block;opacity:0.8"></div>`);
+		this.$bg = $(`<div class="backdrop" style="background-image:url(/${this.backdropImage});display:block;opacity:0.8"></div>`);
 		this.$terrain = $('<div class="weather"></div>');
 		this.$weather = $('<div class="weather"></div>');
 		this.$bgEffect = $('<div></div>');
@@ -598,18 +599,37 @@ export class BattleScene implements BattleSceneStub {
 			bg = 'fx/bg-scl.png';
 			this.setBgm(-101);
 		} else {
-			if (gen <= 1) bg = 'fx/bg-gen1.png?';
-			else if (gen <= 2) bg = 'fx/bg-gen2.png?';
-			else if (gen <= 3) bg = `fx/${BattleBackdropsThree[this.numericId % BattleBackdropsThree.length]}?`;
-			else if (gen <= 4) bg = `fx/${BattleBackdropsFour[this.numericId % BattleBackdropsFour.length]}`;
-			else if (gen <= 5) bg = `fx/${BattleBackdropsFive[this.numericId % BattleBackdropsFive.length]}`;
-			else bg = `sprites/gen6bgs/${BattleBackdrops[this.numericId % BattleBackdrops.length]}`;
+			const formatName = toID(this.battle.tier);
+			// console.log({
+			// 	tier: this.battle.tier,
+			// 	rated: this.battle.rated,
+			// 	id: this.battle.id,
+			// 	dex: this.battle.dex,
+			// 	modid: this.battle.dex.modid,
+
+			// });
+
+			if (this.battle.id.includes('rejuvenation')) {
+				bg = `sprites/backdrops/rejuvenation/${BattleBackdropsRejuvenation[this.numericId % BattleBackdropsRejuvenation.length]}`;
+			} else if (gen <= 1) {
+				bg = 'fx/bg-gen1.png?';
+			} else if (gen <= 2) {
+				bg = 'fx/bg-gen2.png?';
+			} else if (gen <= 3) {
+				bg = `fx/${BattleBackdropsThree[this.numericId % BattleBackdropsThree.length]}?`;
+			} else if (gen <= 4) {
+				bg = `fx/${BattleBackdropsFour[this.numericId % BattleBackdropsFour.length]}`;
+			} else if (gen <= 5) {
+				bg = `fx/${BattleBackdropsFive[this.numericId % BattleBackdropsFive.length]}`;
+			} else {
+				bg = `sprites/gen6bgs/${BattleBackdrops[this.numericId % BattleBackdrops.length]}`;
+			}
 		}
 
 		this.backdropImage = bg;
-		if (this.$bg) {
-			this.$bg.css('background-image', `url(${Dex.resourcePrefix}${this.backdropImage})`);
-		}
+		console.log(`Background image: /${this.backdropImage}`);
+
+		if (this.$bg) {this.$bg.css('background-image',`url(/${this.backdropImage})`);}
 	}
 
 	getDetailsText(pokemon: Pokemon) {
@@ -3258,6 +3278,14 @@ const BattleBackdrops = [
 	'bg-orasdesert.jpg',
 	'bg-orassea.jpg',
 	'bg-skypillar.jpg',
+];
+const BattleBackdropsRejuvenation = [
+	'bg-indoor.png',
+	'bg-indoor-a.png',
+	'bg-indoor-b.png',
+	'bg-indoor-c.png',
+	'bg-indoor-d.png',
+	'bg-indoor-e.png',
 ];
 
 export const BattleOtherAnims: AnimTable = {

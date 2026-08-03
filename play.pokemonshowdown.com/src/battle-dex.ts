@@ -300,19 +300,44 @@ export const Dex = new class implements ModdedDex {
 	}
 
 	resolveAvatar(avatar: string): string {
+		const originalAvatar = avatar;
+
+		// Old/default Showdown avatars arrive as numbers.
 		if (window.BattleAvatarNumbers && avatar in BattleAvatarNumbers) {
 			avatar = BattleAvatarNumbers[avatar];
 		}
+
+		// Replace numeric defaults with an avatar that actually exists locally.
+		if (/^\d+$/.test(originalAvatar)) {
+			avatar = 'melia - rejuvenation';
+		}
+
 		if (avatar.startsWith('#')) {
-			return Dex.resourcePrefix + 'sprites/trainers-custom/' + toID(avatar.substr(1)) + '.png';
+			return (
+				window.location.origin +
+				'/sprites/trainers-custom/' +
+				toID(avatar.slice(1)) +
+				'.png'
+			);
 		}
+
 		if (avatar.includes('.') && window.Config?.server?.registered) {
-			// custom avatar served by the server
-			const protocol = (Config.server.port === 443) ? 'https' : 'http';
-			const server = `${protocol}://${Config.server.host}:${Config.server.port}`;
-			return `${server}/avatars/${encodeURIComponent(avatar).replace(/%3F/g, '?')}`;
+			const protocol = Config.server.port === 443 ? 'https' : 'http';
+			const server =
+				`${protocol}://${Config.server.host}:${Config.server.port}`;
+
+			return (
+				`${server}/avatars/` +
+				encodeURIComponent(avatar).replace(/%3F/g, '?')
+			);
 		}
-		return Dex.resourcePrefix + 'sprites/trainers/' + Dex.sanitizeName(avatar || 'unknown') + '.png';
+
+		return (
+			window.location.origin +
+			'/sprites/trainers/' +
+			encodeURIComponent(avatar || 'aero - rejuvenation') +
+			'.png'
+		);
 	}
 
 	/**
@@ -623,12 +648,12 @@ export const Dex = new class implements ModdedDex {
 			shiny: options.shiny,
 		};
 
-		console.log('[Sprite Debug]', {
-			pokemon: pokemon instanceof Pokemon ? pokemon.speciesForme : pokemon,
-			isFront,
-			options,
-			spriteData,
-    	});
+		// console.log('[Sprite Debug]', {
+		// 	pokemon: pokemon instanceof Pokemon ? pokemon.speciesForme : pokemon,
+		// 	isFront,
+		// 	options,
+		// 	spriteData,
+    	// });
 
 		let name = species.spriteid;
 		let dir;
@@ -837,7 +862,7 @@ export const Dex = new class implements ModdedDex {
 		}
 
 		// Testing
-		console.log('[Sprite Debug] Final URL:', spriteData.url);
+		// console.log('[Sprite Debug] Final URL:', spriteData.url);
 
 		return spriteData;
 	}

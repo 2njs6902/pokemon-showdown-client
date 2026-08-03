@@ -746,35 +746,175 @@
 		}
 	});
 
-	var AvatarsPopup = this.AvatarsPopup = Popup.extend({
-		type: 'semimodal',
-		initialize: function () {
-			var cur = +app.user.get('avatar');
-			var buf = '';
-			buf += '<p>Choose an avatar or <button name="close" class="button">Cancel</button></p>';
+var AvatarsPopup = this.AvatarsPopup = Popup.extend({
+	type: 'semimodal',
 
-			buf += '<div class="avatarlist">';
-			for (var i = 1; i <= 293; i++) {
-				if (i === 162 || i === 168) continue;
-				var offset = '-' + (((i - 1) % 16) * 80 + 1) + 'px -' + (Math.floor((i - 1) / 16) * 80 + 1) + 'px';
-				buf += '<button name="setAvatar" value="' + i + '" style="background-position:' + offset + '" class="option pixelated' + (i === cur ? ' cur' : '') + '" title="/avatar ' + i + '"></button>';
-			}
-			buf += '</div><div style="clear:left"></div>';
+	events: {
+		'input input[name=avatarSearch]': 'searchAvatars',
+		'keyup input[name=avatarSearch]': 'searchAvatars'
+	},
 
-			buf += '<p><button name="close" class="button">Cancel</button></p>';
-			this.$el.html(buf).css('max-width', 780);
-		},
-		setAvatar: function (avatar) {
-			// Replace avatar number with name before sending it to the server, only the client knows what to do with the numbers
-			if (window.BattleAvatarNumbers && Object.prototype.hasOwnProperty.call(window.BattleAvatarNumbers, avatar)) {
-				avatar = window.BattleAvatarNumbers[avatar];
+	initialize: function () {
+		this.curAvatar = String(app.user.get('avatar') || '');
+
+		this.$el.html(
+			'<p>Loading available avatars...</p>' +
+			'<p><button name="close" class="button">Cancel</button></p>'
+		).css('max-width', 780);
+
+		var self = this;
+
+		app.once('response:localavatars', function (avatars) {
+			if (!Array.isArray(avatars)) {
+				self.renderAvatars([]);
+				return;
 			}
-			app.send('/avatar ' + avatar);
-			app.send('/cmd userdetails ' + app.user.get('userid'));
-			Storage.prefs('avatar', avatar);
-			this.close();
+
+			self.renderAvatars(avatars);
+		});
+
+		app.send('/localavatars');
+	},
+
+	renderAvatars: function (avatars) {
+		var cur = this.curAvatar;
+		var buf = '';
+
+		buf += '<p>Choose an avatar or ' +
+			'<button name="close" class="button">Cancel</button></p>';
+
+		// Search bar
+		buf += '<p style="margin:8px 0 12px;">' +
+			'<input' +
+				' type="search"' +
+				' name="avatarSearch"' +
+				' class="textbox autofocus"' +
+				' placeholder="Search avatars..."' +
+				' autocomplete="off"' +
+				' style="box-sizing:border-box;width:100%;max-width:420px;"' +
+			' />' +
+		'</p>';
+
+		buf += '<div class="avatarlist" style="' +
+			'display:flex;' +
+			'flex-wrap:wrap;' +
+			'align-items:flex-start;' +
+			'gap:8px;' +
+		'">';
+
+		if (!avatars.length) {
+			buf += '<p>No custom trainer PNG files were found.</p>';
 		}
-	});
+
+		for (var i = 0; i < avatars.length; i++) {
+			var avatar = String(avatars[i] || '');
+
+			if (!avatar) continue;
+
+			var escapedAvatar = BattleLog.escapeHTML(avatar);
+			var avatarPath =
+				location.origin +
+				'/sprites/trainers/' +
+				encodeURIComponent(avatar) +
+				'.png';
+
+			var displayName = avatar
+				.replace(/_/g, ' ') // Replace underscores with spaces
+				.replace(/\b[a-z]/g, function (letter) { // Capitalize the first letter of each word
+					return letter.toUpperCase();
+				});
+
+			var escapedDisplayName = BattleLog.escapeHTML(displayName);
+
+			buf += '<div' +
+				' class="avatar-entry"' +
+				' data-avatar="' + escapedAvatar.toLowerCase() + '"' +
+				' style="' +
+					'display:flex;' +
+					'flex-direction:column;' +
+					'align-items:center;' +
+					'width:94px;' +
+					'min-height:110px;' +
+					'text-align:center;' +
+				'">' +
+
+				'<button' +
+					' name="setAvatar"' +
+					' value="' + escapedAvatar + '"' +
+					' class="option pixelated' +
+					(avatar === cur ? ' cur' : '') + '"' +
+					' title="/avatar ' + escapedAvatar + '"' +
+					' style="' +
+						'background-image:url(\'' +
+							BattleLog.escapeHTML(avatarPath) +
+						'\');' +
+						'background-position:center;' +
+						'background-repeat:no-repeat;' +
+						'background-size:80px 80px;' +
+						'float:none;' +
+						'margin:0 auto 4px;' +
+					'">' +
+				'</button>' +
+
+				'<span' +
+					' title="' + escapedDisplayName + '"' +
+					' style="' +
+						'display:block;' +
+						'box-sizing:border-box;' +
+						'width:94px;' +
+						'padding:0 2px;' +
+						'font-size:11px;' +
+						'line-height:14px;' +
+						'overflow-wrap:anywhere;' +
+					'">' +
+					escapedDisplayName +
+				'</span>' +
+
+			'</div>';
+		}
+
+		buf += '</div>';
+		buf += '<div style="clear:both"></div>';
+
+		buf += '<p class="avatar-search-empty" style="display:none;">' +
+			'No avatars matched your search.' +
+		'</p>';
+
+		buf += '<p><button name="close" class="button">' +
+			'Cancel' +
+		'</button></p>';
+
+		this.$el.html(buf).css('max-width', 780);
+	},
+
+	searchAvatars: function (e) {
+		var query = String(e.currentTarget.value || '')
+			.toLowerCase()
+			.trim();
+
+		var visibleCount = 0;
+
+		this.$('.avatar-entry').each(function () {
+			var $entry = $(this);
+			var avatar = String($entry.attr('data-avatar') || '');
+			var matches = !query || avatar.indexOf(query) !== -1;
+
+			$entry.toggle(matches);
+
+			if (matches) visibleCount++;
+		});
+
+		this.$('.avatar-search-empty').toggle(visibleCount === 0);
+	},
+
+	setAvatar: function (avatar) {
+		console.log("Sending avatar:", avatar);
+		app.send('/avatar ' + avatar);
+		app.send('/cmd userdetails ' + app.user.get('userid'));
+		Storage.prefs('avatar', avatar);
+		this.close();
+	}
+});
 
 	var TabListPopup = this.TabListPopup = Popup.extend({
 		type: 'semimodal',

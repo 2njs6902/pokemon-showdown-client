@@ -975,7 +975,7 @@ class AvatarsPanel extends PSRoomPanel {
 		}
 
 		return <PSPanelWrapper room={room} width={1210}><div class="pad">
-			<label class="optlabel"><strong>Choose an avatar or </strong>
+			<label class="optlabel"><strong>Choose/Search an avatar or </strong>
 				<button class="button" data-cmd="/close"> Cancel</button>
 			</label>
 			<div class="avatarlist">
