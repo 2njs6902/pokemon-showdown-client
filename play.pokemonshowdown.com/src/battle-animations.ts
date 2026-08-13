@@ -57,6 +57,7 @@ export class BattleScene implements BattleSceneStub {
 	$options: JQuery = null!;
 	log: BattleLog;
 	$terrain: JQuery = null!;
+	$field: JQuery = null!;
 	$weather: JQuery = null!;
 	$bgEffect: JQuery = null!;
 	$bg: JQuery = null!;
@@ -88,6 +89,7 @@ export class BattleScene implements BattleSceneStub {
 	interruptionCount = 1;
 	curWeather = '';
 	curTerrain = '';
+	curField = '';
 
 	// Animation state
 	////////////////////////////////////
@@ -155,6 +157,7 @@ export class BattleScene implements BattleSceneStub {
 		console.log(`<div class="backdrop" style="background-image:url(/${this.backdropImage});display:block;opacity:0.8"></div>`);
 		this.$bg = $(`<div class="backdrop" style="background-image:url(/${this.backdropImage});display:block;opacity:0.8"></div>`);
 		this.$terrain = $('<div class="weather"></div>');
+		this.$field = $('<div class="weather"></div>');
 		this.$weather = $('<div class="weather"></div>');
 		this.$bgEffect = $('<div></div>');
 		this.$sprite = $('<div></div>');
@@ -179,7 +182,8 @@ export class BattleScene implements BattleSceneStub {
 		this.$tooltips = $('<div class="tooltips"></div>');
 
 		this.$battle.append(this.$bg);
-		this.$battle.append(this.$terrain);
+		this.$battle.append(this.$terrain);	
+		this.$battle.append(this.$field);
 		this.$battle.append(this.$weather);
 		this.$battle.append(this.$bgEffect);
 		this.$battle.append(this.$sprite);
@@ -201,6 +205,7 @@ export class BattleScene implements BattleSceneStub {
 		this.timeOffset = 0;
 		this.pokemonTimeOffset = 0;
 		this.curTerrain = '';
+		this.curField = '';
 		this.curWeather = '';
 
 		this.log.battleParser!.perspective = this.battle.mySide.sideid;
@@ -1087,6 +1092,19 @@ export class BattleScene implements BattleSceneStub {
 			});
 			this.curTerrain = terrain;
 		}
+	}
+	updateField(field: string) {
+		if (field === this.curField) return;
+
+		this.$field.animate({
+			top: 360,
+			opacity: 0,
+		}, this.curField ? 400 : 1, () => {
+			this.$field.attr('class', field ? 'weather ' + field + 'weather' : 'weather');
+			this.$field.animate({ top: 0, opacity: 1 }, 400);
+		});
+
+		this.curField = field;
 	}
 	resetTurn() {
 		if (this.battle.turn <= 0) {

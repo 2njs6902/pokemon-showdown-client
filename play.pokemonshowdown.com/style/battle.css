@@ -481,6 +481,15 @@ License: GPLv2
 	color: #661155;
 }
 
+.forestfieldweather {
+	background: transparent url(../sprites/backdrops/rejuvenation/forestfield.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
+.swampfieldweather {
+	background: transparent url(../sprites/backdrops/rejuvenation/swampfield.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
+
 .battle .result {
 	display: none;
 	position: absolute;
