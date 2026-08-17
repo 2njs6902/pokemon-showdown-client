@@ -944,6 +944,48 @@ export const Dex = new class implements ModdedDex {
 		if (dex.modid === 'rejuvenation' || currentFormat.includes('rejuvenation')) {
 			const shiny = pokemon.shiny ? '-shiny' : '';
 
+			const femaleSprites = [
+				'ambipom',
+				'alakazam',
+				'aipom',
+				'blaziken',
+				'combee',
+				'combusken',
+				'gabite',
+				'garchomp',
+				'gible',
+				'gligar',
+				'gulpin',
+				'heracross',
+				'hippopotas',
+				'hippowdon',
+				'houndoom',
+				'kadabra',
+				'ledian',
+				'ledyba',
+				'ludicolo',
+				'luxio',
+				'luxray',
+				'meganium',
+				'octillery',
+				'shinx',
+				'sneasel',
+				'sneaselhisui',
+				'snover',
+				'steelix',
+				'steelixmega',
+				'swalot',
+				'torchic',
+				'unfezant',
+				'unfezantaevium',
+				'venusaur',
+				'weavile',
+			];
+
+			if (pokemon.gender === 'F' && femaleSprites.includes(id)) {
+				spriteid += '-f';
+			}
+
 			return {
 				url: `sprites/rejuvenation${shiny}/${spriteid}.png`,
 				x: 10,

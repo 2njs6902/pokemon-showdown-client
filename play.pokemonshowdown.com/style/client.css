@@ -2530,6 +2530,8 @@ p.or:after {
 	float: left;
 	font-size: 9pt;
 	text-align: center;
+	width: 33.333%;	
+    box-sizing: border-box;
 }
 .setdetails .detailcell-first {
 	border-left: 0;

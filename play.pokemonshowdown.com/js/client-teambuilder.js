@@ -1350,7 +1350,7 @@
 						buf += '<span class="detailcell"><label>Gmax</label>' + (set.gigantamax || species.forme === 'Gmax' ? 'Yes' : 'No') + '</span>';
 					}
 				}
-				if (this.curTeam.gen === 9) {
+				if (this.curTeam.gen === 9 && !this.curTeam.format.includes('rejuvenation')) {
 					buf += '<span class="detailcell"><label>Tera Type</label>' + (set.teraType || species.requiredTeraType || species.types[0]) + '</span>';
 				}
 			}
@@ -2045,9 +2045,9 @@
 
 			var item = this.curTeam.dex.items.get(set.item);
 			if (item.id) {
-				this.$('.setcol-details .itemicon').css('background', Dex.getItemIcon(item).substr(11));
+				this.$('.setcol-details .itemicon').attr('style', Dex.getItemIcon(item));
 			} else {
-				this.$('.setcol-details .itemicon').css('background', 'none');
+				this.$('.setcol-details .itemicon').attr('style', '');
 			}
 
 			this.updateStatGraph();
@@ -2919,7 +2919,7 @@
 				buf += '</select></div></div>';
 			}
 
-			if (this.curTeam.gen === 9) {
+			if (this.curTeam.gen === 9 && !this.curTeam.format.includes('rejuvenation')) {
 				buf += '<div class="formrow"><label class="formlabel" title="Tera Type">Tera Type:</label><div>';
 				buf += '<select name="teratype" class="button">';
 				var types = Dex.types.all();
@@ -3037,7 +3037,7 @@
 						buf += '<span class="detailcell"><label>Gmax</label>' + (set.gigantamax || species.forme === 'Gmax' ? 'Yes' : 'No') + '</span>';
 					}
 				}
-				if (this.curTeam.gen === 9) {
+				if (this.curTeam.gen === 9 && !this.curTeam.format.includes('rejuvenation')) {
 					buf += '<span class="detailcell"><label>Tera Type</label>' + (set.teraType || species.requiredTeraType || species.types[0]) + '</span>';
 				}
 			}
@@ -3712,8 +3712,9 @@
 			this.chartIndex = data.index;
 			var dex = this.room.curTeam.dex;
 			var species = dex.species.get(this.curSet.species);
-			var baseid = toID(species.baseSpecies);
-			var forms = [baseid].concat(species.cosmeticFormes.map(toID));
+			var baseSpecies = dex.species.get(species.baseSpecies);
+			var baseid = toID(baseSpecies.name);
+			var forms = [baseid].concat((baseSpecies.cosmeticFormes || []).map(toID));
 			var maxSpriteSize = 96;
 
 			var buf = '';
@@ -3731,7 +3732,11 @@
 				var spriteDim = 'width: ' + spriteSize + 'px; height: ' + spriteSize + 'px;';
 				var resize = (data.h ? 'background-size:' + data.h + 'px;' : '');
 				buf += '<button name="setForm" value="' + form + '" style="';
-				buf += 'background-image: url(' + Dex.resourcePrefix + data.spriteDir + '/' + spriteid + '.png); ' + spriteDim + resize + '" class="option';
+				if (this.room.curTeam.format.includes('rejuvenation')) {
+					buf += 'background-image: url(sprites/rejuvenation/' + spriteid + '.png); ' + spriteDim + resize + '" class="option';
+				} else {
+					buf += 'background-image: url(' + Dex.resourcePrefix + data.spriteDir + '/' + spriteid + '.png); ' + spriteDim + resize + '" class="option';
+				}
 				buf += (form === (species.forme || '') ? ' cur' : '') + '"></button>';
 			}
 			buf += '<div style="clear:both"></div>';
@@ -3740,15 +3745,26 @@
 			this.$el.html(buf).css({ 'max-width': (4 + maxSpriteSize) * 7 });
 		},
 		setForm: function (form) {
-			var species = Dex.species.get(this.curSet.species);
-			if (form && form !== species.form) {
-				this.curSet.species = Dex.species.get(species.baseSpecies + form).name;
+			var dex = this.room.curTeam.dex;
+			var species = dex.species.get(this.curSet.species);
+
+			if (form && form !== species.forme) {
+				this.curSet.species = dex.species.get(species.baseSpecies + form).name;
 			} else if (!form) {
 				this.curSet.species = species.baseSpecies;
 			}
+
+			var newSpecies = dex.species.get(this.curSet.species);
+
+			if (newSpecies.id.endsWith('f')) {
+				this.curSet.gender = 'F';
+			} else if (newSpecies.cosmeticFormes || species.baseSpecies === newSpecies.name) {
+				this.curSet.gender = 'M';
+			}
+
 			this.close();
 			if (this.room.curSet) {
-				this.room.updatePokemonSprite();
+				this.room.update();
 			} else {
 				this.room.update();
 			}

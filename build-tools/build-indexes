@@ -935,11 +935,10 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 
 	const rejuvenationDex = Dex.mod('rejuvenation');
 
-	const rejuvenationTiers = [
-		['header', "Pokémon"],
-	];
-
+	const rejuvenationTiers = [];
 	const rejuvenationOverrideTier = {};
+	const rejuvenationFormatSlices = {};
+	const rejuvenationTierTable = {};
 
 	const rejuvenationPokemon = Object.keys(rejuvenationDex.data.Pokedex);
 	rejuvenationPokemon.sort();
@@ -947,15 +946,51 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 	for (const id of rejuvenationPokemon) {
 		const species = rejuvenationDex.species.get(id);
 
-		if (!species.exists || species.isCosmeticForme) continue;
+		if (!species.exists || species.isCosmeticForme || species.tier === 'Illegal') continue;
 
-		rejuvenationTiers.push(id);
-		rejuvenationOverrideTier[id] = species.tier || 'Legal';
+		const tier = species.tier;
+		if (!tier) continue;
+
+		rejuvenationOverrideTier[id] = tier;
+
+		if (!rejuvenationTierTable[tier]) rejuvenationTierTable[tier] = [];
+		rejuvenationTierTable[tier].push(id);
 	}
 
-	const rejuvenationItems = [
-		['header', "Items"],
+	const rejuvenationTierOrder = [
+		"AG", "Uber", "(Uber)", "OU", "(OU)", "UUBL", "UU", "RUBL", "RU",
+		"NUBL", "NU", "PUBL", "PU", "ZUBL", "ZU", "NFE", "LC",
 	];
+
+	for (const tier of rejuvenationTierOrder) {
+		if (["AG", "Uber", "OU", "UUBL", "UU", "RU", "NU", "PU", "ZU", "NFE", "LC"].includes(tier)) {
+			rejuvenationFormatSlices[tier] = rejuvenationTiers.length;
+		}
+
+		if (!rejuvenationTierTable[tier]) continue;
+
+		if (tier.charAt(0) === '(') {
+			rejuvenationTiers.push(['header', tier.slice(1, -1) + " by technicality"]);
+		} else if (tier === "NFE") {
+			rejuvenationTiers.push(['header', "NFEs not in a higher tier"]);
+		} else {
+			rejuvenationTiers.push(['header', tier]);
+		}
+
+		rejuvenationTiers.push(...rejuvenationTierTable[tier]);
+	}
+
+	const rejuvenationItems = [];
+
+	const greatItems = [];
+	const goodItems = [];
+	const gems = [];
+	const specificItems = [];
+	const memories = [];
+	const poorItems = [];
+	const megaStones = [];
+	const badItems = [];
+	const unreleasedItems = [];
 
 	const rejuvenationItemIds = Object.keys(rejuvenationDex.data.Items);
 	rejuvenationItemIds.sort();
@@ -963,16 +998,90 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 	for (const id of rejuvenationItemIds) {
 		const item = rejuvenationDex.items.get(id);
 
-		if (!item.exists) continue;
+		if (!item.exists || item.isNonstandard === 'Unobtainable') continue;
 
-		rejuvenationItems.push(id);
+		switch (id) {
+		case 'leftovers':
+		case 'heavydutyboots':
+		case 'choicescarf':
+		case 'choiceband':
+		case 'choicespecs':
+		case 'lifeorb':
+		case 'focussash':
+		case 'assaultvest':
+		case 'rockyhelmet':
+		case 'sitrusberry':
+		case 'boosterenergy':
+			greatItems.push(id);
+			break;
+
+		default:
+			if (item.name.endsWith(" Ball") || item.name.endsWith(" Fossil") || item.name.startsWith("Fossilized ") || item.name.endsWith(" Sweet") || item.name.endsWith(" Apple")) {
+				badItems.push(id);
+			} else if (item.name.endsWith(" Gem")) {
+				gems.push(id);
+			} else if (item.name.endsWith(" Memory")) {
+				memories.push(id);
+			} else if (item.name.endsWith(" Drive") || item.name.startsWith("Rusted") || item.itemUser) {
+				specificItems.push(id);
+			} else if (item.megaStone) {
+				megaStones.push(id);
+			} else {
+				goodItems.push(id);
+			}
+		}
+	}
+
+	if (greatItems.length) {
+		rejuvenationItems.push(['header', "Popular items"]);
+		rejuvenationItems.push(...greatItems);
+	}
+
+	if (goodItems.length) {
+		rejuvenationItems.push(['header', "Items"]);
+		rejuvenationItems.push(...goodItems);
+	}
+
+	if (gems.length) {
+		rejuvenationItems.push(['header', "Gems"]);
+		rejuvenationItems.push(...gems);
+	}
+
+	if (specificItems.length) {
+		rejuvenationItems.push(['header', "Pokémon-specific items"]);
+		rejuvenationItems.push(...specificItems);
+	}
+
+	if (megaStones.length) {
+		rejuvenationItems.push(['header', "Mega Stones"]);
+		rejuvenationItems.push(...megaStones);
+	}
+
+	if (memories.length) {
+		rejuvenationItems.push(['header', "Memories"]);
+		rejuvenationItems.push(...memories);
+	}
+
+	if (poorItems.length) {
+		rejuvenationItems.push(['header', "Usually useless items"]);
+		rejuvenationItems.push(...poorItems);
+	}
+
+	if (badItems.length) {
+		rejuvenationItems.push(['header', "Other items"]);
+		rejuvenationItems.push(...badItems);
+	}
+
+	if (unreleasedItems.length) {
+		rejuvenationItems.push(['header', "Unreleased items"]);
+		rejuvenationItems.push(...unreleasedItems);
 	}
 
 	BattleTeambuilderTable.rejuvenation.tiers = rejuvenationTiers;
 	BattleTeambuilderTable.rejuvenation.items = rejuvenationItems;
 	BattleTeambuilderTable.rejuvenation.overrideTier = rejuvenationOverrideTier;
 	BattleTeambuilderTable.rejuvenation.metagameBans = {};
-	BattleTeambuilderTable.rejuvenation.formatSlices = {};
+	BattleTeambuilderTable.rejuvenation.formatSlices = rejuvenationFormatSlices;
 
 	//
 	// Learnset table
