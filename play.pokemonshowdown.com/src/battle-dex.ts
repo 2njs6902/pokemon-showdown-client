@@ -1139,6 +1139,10 @@ export const Dex = new class implements ModdedDex {
 	}
 };
 
+function getTeambuilderTableKey(modid: ID): ID {
+	return modid === 'gen9rejuvenation' ? 'rejuvenation' as ID : modid;
+}
+
 export class ModdedDex {
 	readonly gen: number;
 	readonly modid: ID;
@@ -1174,7 +1178,7 @@ export class ModdedDex {
 				}
 			}
 			if (this.modid !== `gen${this.gen}`) {
-				const table = window.BattleTeambuilderTable[this.modid];
+				const table = window.BattleTeambuilderTable[getTeambuilderTableKey(this.modid)];
 				if (id in table.overrideMoveData) {
 					Object.assign(data, table.overrideMoveData[id]);
 				}
@@ -1207,7 +1211,7 @@ export class ModdedDex {
 				}
 			}
 			if (this.modid !== `gen${this.gen}`) {
-				const table = window.BattleTeambuilderTable[this.modid];
+				const table = window.BattleTeambuilderTable[getTeambuilderTableKey(this.modid)];
 				if (id in table.overrideItemData) {
 					Object.assign(data, table.overrideItemData[id]);
 				}
@@ -1237,7 +1241,7 @@ export class ModdedDex {
 				}
 			}
 			if (this.modid !== `gen${this.gen}`) {
-				const table = window.BattleTeambuilderTable[this.modid];
+				const table = window.BattleTeambuilderTable[getTeambuilderTableKey(this.modid)];
 				if (id in table.overrideAbilityData) {
 					Object.assign(data, table.overrideAbilityData[id]);
 				}
@@ -1267,7 +1271,7 @@ export class ModdedDex {
 				}
 			}
 			if (this.modid !== `gen${this.gen}`) {
-				const table = window.BattleTeambuilderTable[this.modid];
+				const table = window.BattleTeambuilderTable[getTeambuilderTableKey(this.modid)];
 				if (id in table.overrideSpeciesData) {
 					Object.assign(data, table.overrideSpeciesData[id]);
 				}
@@ -1276,7 +1280,7 @@ export class ModdedDex {
 				data.abilities = { 0: "No Ability" };
 			}
 
-			const table = window.BattleTeambuilderTable[this.modid];
+			const table = window.BattleTeambuilderTable[getTeambuilderTableKey(this.modid)];
 			if (id in table.overrideTier) data.tier = table.overrideTier[id];
 			if (!data.tier && id.endsWith('totem')) {
 				data.tier = this.species.get(id.slice(0, -5)).tier;
