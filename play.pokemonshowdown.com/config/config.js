@@ -19,10 +19,10 @@ Config.whitelist = [
 // `defaultserver` specifies the server to use when the domain name in the
 // address bar is `Config.routes.client`.
 Config.defaultserver = {
-	id: 'showdown',
-	host: 'sim3.psim.us',
+	id: 'pcrshowdown',
+	host: 'server.pcr-showdown.com',
 	port: 443,
-	httpport: 8000,
+	httpport: 80,
 	altport: 80,
 	registered: true
 };
@@ -38,7 +38,7 @@ Config.version = "0.11.2 (f339cef0)";
 
 Config.routes = {
 	root: 'pokemonshowdown.com',
-	client: 'play.pokemonshowdown.com',
+	client: 'pcr-showdown.com',
 	dex: 'dex.pokemonshowdown.com',
 	replays: 'replay.pokemonshowdown.com',
 	users: 'pokemonshowdown.com/users',
