@@ -1,5 +1,5 @@
 {
-	"name": "pcr-showdown",
+	"name": "pokemon-showdown-client",
 	"compatibility_date": "2026-08-18",
 	"assets": {
 		"directory": "./play.pokemonshowdown.com"
