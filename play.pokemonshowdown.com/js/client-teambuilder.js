@@ -1289,6 +1289,7 @@
 			var isLetsGo = this.curTeam.format.includes('letsgo');
 			var isBDSP = this.curTeam.format.includes('bdsp');
 			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
+			var isRejuvenation = this.curTeam.format.includes('rejuvenation');
 			var buf = '<li value="' + i + '">';
 			if (!set.species) {
 				if (this.deletedSet) {
@@ -1332,12 +1333,13 @@
 					buf += '<span class="detailcell"><label>Happiness</label>' + (typeof set.happiness === 'number' ? set.happiness : 255) + '</span>';
 				}
 				buf += '<span class="detailcell"><label>Shiny</label>' + (set.shiny ? 'Yes' : 'No') + '</span>';
-				if (!isLetsGo && this.curTeam.gen < 9) {
+				if (isRejuvenation) {
+					buf += '<span class="detailcell"><label>HP Type</label>' + (set.hpType || 'Dark') + '</span>';
+				} else if (!isLetsGo && this.curTeam.gen < 9) {
 					if (this.curTeam.gen === 8 && !isNatDex) {
 						if (isBDSP && species.baseSpecies === "Unown") {
 							buf += '<span class="detailcell"><label>HP Type</label>' + (set.hpType || 'Dark') + '</span>';
 						}
-						// Hidden Power isn't in normal Gen 8
 					} else {
 						buf += '<span class="detailcell"><label>HP Type</label>' + (set.hpType || 'Dark') + '</span>';
 					}
@@ -2413,7 +2415,7 @@
 						}
 					}
 				}
-				if (hpType && !this.canHyperTrain(set)) {
+				if (hpType && hpType !== 'normal' && hpType !== 'fairy' && !this.canHyperTrain(set)) {
 					var hpIVs;
 					switch (hpType) {
 					case 'dark':
@@ -2845,6 +2847,7 @@
 			var isLetsGo = this.curTeam.format.includes('letsgo');
 			var isBDSP = this.curTeam.format.includes('bdsp');
 			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
+			var isRejuvenation = this.curTeam.format.includes('rejuvenation');
 			var isHackmons = this.curTeam.format.includes('hackmons') || this.curTeam.format.endsWith('bh');
 			var species = this.curTeam.dex.species.get(set.species);
 			if (!set) return;
@@ -2907,15 +2910,22 @@
 				buf += '</select></div></div>';
 			}
 
-			if (!isLetsGo && (this.curTeam.gen === 7 || isNatDex || (isBDSP && species.baseSpecies === 'Unown'))) {
+			if (!isLetsGo && (isRejuvenation || this.curTeam.gen === 7 || isNatDex || (isBDSP && species.baseSpecies === 'Unown'))) {
 				buf += '<div class="formrow"><label class="formlabel" title="Hidden Power Type">Hidden Power:</label><div><select name="hptype" class="button">';
-				buf += '<option value=""' + (!set.hpType ? ' selected="selected"' : '') + '>(automatic type)</option>'; // unset
+				buf += '<option value=""' + (!set.hpType ? ' selected="selected"' : '') + '>(automatic type)</option>';
+
 				var types = Dex.types.all();
 				for (var i = 0; i < types.length; i++) {
-					if (types[i].HPivs) {
-						buf += '<option value="' + types[i].name + '"' + (set.hpType === types[i].name ? ' selected="selected"' : '') + '>' + types[i].name + '</option>';
+					if (
+						types[i].HPivs ||
+						(isRejuvenation && (types[i].name === 'Normal' || types[i].name === 'Fairy'))
+					) {
+						buf += '<option value="' + types[i].name + '"' +
+							(set.hpType === types[i].name ? ' selected="selected"' : '') +
+							'>' + types[i].name + '</option>';
 					}
 				}
+
 				buf += '</select></div></div>';
 			}
 
@@ -2946,6 +2956,7 @@
 			var isLetsGo = this.curTeam.format.includes('letsgo');
 			var isBDSP = this.curTeam.format.includes('bdsp');
 			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
+			var isRejuvenation = this.curTeam.format.includes('rejuvenation');
 
 			// level
 			var level = parseInt(this.$chart.find('input[name=level]').val(), 10);
@@ -3028,7 +3039,9 @@
 					if (this.curTeam.gen < 8 || isNatDex) buf += '<span class="detailcell"><label>Happiness</label>' + (typeof set.happiness === 'number' ? set.happiness : 255) + '</span>';
 				}
 				buf += '<span class="detailcell"><label>Shiny</label>' + (set.shiny ? 'Yes' : 'No') + '</span>';
-				if (!isLetsGo && (this.curTeam.gen < 8 || isNatDex)) buf += '<span class="detailcell"><label>HP Type</label>' + (set.hpType || 'Dark') + '</span>';
+				if (isRejuvenation || (!isLetsGo && (this.curTeam.gen < 8 || isNatDex))) {
+					buf += '<span class="detailcell"><label>HP Type</label>' + (set.hpType || 'Dark') + '</span>';
+				}
 				if (this.curTeam.gen === 8 && !isBDSP) {
 					if (!species.cannotDynamax) {
 						buf += '<span class="detailcell"><label>Dmax Level</label>' + (typeof set.dynamaxLevel === 'number' ? set.dynamaxLevel : 10) + '</span>';
