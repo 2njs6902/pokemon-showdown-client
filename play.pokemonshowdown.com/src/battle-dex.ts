@@ -1101,7 +1101,7 @@ export const Dex = new class implements ModdedDex {
 			this.modid.includes('rejuvenation') ||
 			currentFormat.includes('rejuvenation');
 
-		const sanitizedType = type.replace(/\?/g, '%3f');
+		const sanitizedType = type === '???' ? 'unknown' : type;
 		const spriteDir = isRejuvenation
 			? 'sprites/rejuvenationtypes'
 			: 'sprites/types';

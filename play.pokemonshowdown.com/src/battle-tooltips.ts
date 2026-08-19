@@ -1593,7 +1593,25 @@ export class BattleTooltips {
 		const pokemon = value.pokemon;
 		const serverPokemon = value.serverPokemon;
 
-		let moveType = move.type;
+		let hiddenPowerType: Dex.TypeName | null = null;
+
+		// Custom Hidden Power types such as Fairy/Normal don't have
+		// individual move entries, so recover their type from the move ID.
+		if (move.id.startsWith('hiddenpower') && move.id !== 'hiddenpower') {
+			let typeid = move.id.slice(11).replace(/[0-9]+$/, '');
+			const type = this.battle.dex.types.get(typeid);
+
+			if (type.exists) {
+				hiddenPowerType = type.name as Dex.TypeName;
+			}
+
+			// Use the real Hidden Power data for power/category/etc.
+			if (!move.exists) {
+				move = this.battle.dex.moves.get('hiddenpower');
+			}
+		}
+
+		let moveType = hiddenPowerType || move.type;
 		let category = move.category;
 		if (category === 'Status' && forMaxMove) return ['Normal', 'Status']; // Max Guard
 		// can happen in obscure situations
