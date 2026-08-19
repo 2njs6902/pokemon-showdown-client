@@ -1022,10 +1022,10 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 				gems.push(id);
 			} else if (item.name.endsWith(" Memory")) {
 				memories.push(id);
-			} else if (item.name.endsWith(" Drive") || item.name.startsWith("Rusted") || item.itemUser) {
-				specificItems.push(id);
 			} else if (item.megaStone) {
 				megaStones.push(id);
+			} else if (item.name.endsWith(" Drive") || item.name.startsWith("Rusted") || item.itemUser) {
+				specificItems.push(id);
 			} else {
 				goodItems.push(id);
 			}
