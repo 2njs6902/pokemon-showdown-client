@@ -2,7 +2,6 @@ node_modules/
 .DS_Store
 Thumbs.db
 npm-debug.log
-/config/
 /vendor/
 /caches/
 
@@ -51,3 +50,4 @@ npm-debug.log
 play.pokemonshowdown.com/src/combine-ts.bat
 play.pokemonshowdown.com/src/combine-ts.ps1
 play.pokemonshowdown.com/src/combined.txt
+config/testclient-key.js
