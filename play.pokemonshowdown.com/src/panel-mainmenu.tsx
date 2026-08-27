@@ -991,20 +991,27 @@ export class TeamForm extends preact.Component<{
 	render() {
 		if (window.BattleFormats) {
 			this.format ||= this.props.defaultFormat || '';
-			if (!this.format) {
-				this.format = `gen${Dex.gen}randombattle`;
-
+			const isAvailable = (id: string) => {
+				const format = window.BattleFormats[toID(id)];
+				if (!format) return false;
+				if (this.props.selectType === 'challenge' && format.challengeShow === false) return false;
+				if (this.props.selectType === 'search' && format.searchShow === false) return false;
+				if (this.props.selectType === 'tournament' && format.tournamentShow === false) return false;
+				if (this.props.selectType === 'teambuilder' && format.team) return false;
+				return true;
+			};
+			if (!isAvailable(this.format)) {
+				this.format = '';
 				const starredPrefs = PS.prefs.starredformats || {};
 				// .reverse() because the newest starred format should be the default one
 				const starred = Object.keys(starredPrefs).filter(id => starredPrefs[id] === true).reverse();
 				for (let id of starred) {
-					let format = window.BattleFormats[id];
-					if (!format) continue;
-					if (this.props.selectType === 'challenge' && format?.challengeShow === false) continue;
-					if (this.props.selectType === 'search' && format?.searchShow === false) continue;
-					if (this.props.selectType === 'teambuilder' && format?.team) continue;
+					if (!isAvailable(id)) continue;
 					this.format = id;
 					break;
+				}
+				if (!this.format) {
+					this.format = Object.keys(window.BattleFormats).find(isAvailable) || '';
 				}
 			}
 		}

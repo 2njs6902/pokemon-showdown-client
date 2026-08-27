@@ -1011,8 +1011,15 @@ class AvatarsPanel extends PSRoomPanel {
 
 	override componentDidMount() {
 		super.componentDidMount();
-		PS.mainmenu.makeQuery('localavatars').then(response => {
-			this.avatars = Array.isArray(response) ? response : [];
+		fetch('/sprites/trainers/avatars.json', { cache: 'no-store' }).then(response => {
+			if (!response.ok) throw new Error(`Avatar manifest returned ${response.status}`);
+			return response.json();
+		}).then(avatars => {
+			this.avatars = Array.isArray(avatars) ? avatars : [];
+		}).catch(error => {
+			console.error('Unable to load local avatar manifest:', error);
+			this.avatars = [];
+		}).finally(() => {
 			this.forceUpdate();
 		});
 	}

@@ -29,6 +29,17 @@ try {
 	);
 }
 
+// Cloudflare only deploys the client repository, so publish a manifest of the
+// local trainer PNGs for the avatar picker instead of asking the game server
+// to inspect a neighboring client checkout.
+var trainerDir = 'play.pokemonshowdown.com/sprites/trainers';
+var trainerManifest = fs.readdirSync(trainerDir)
+	.filter(filename => filename.toLowerCase().endsWith('.png'))
+	.map(filename => filename.slice(0, -4))
+	.filter(Boolean)
+	.sort((a, b) => a.localeCompare(b));
+fs.writeFileSync(`${trainerDir}/avatars.json`, JSON.stringify(trainerManifest));
+
 var options = {cwd: __dirname, stdio: 'inherit'};
 var full = '';
 
