@@ -137,7 +137,7 @@ if (!compileOpts.ignore) {
 	compiledFiles += compiler.compileToFile(
 		['play.pokemonshowdown.com/src/battle-animations.ts', 'play.pokemonshowdown.com/src/battle-animations-moves.ts'],
 		'play.pokemonshowdown.com/data/graphics.js',
-		compileOpts
+		{...compileOpts, sourceMaps: false}
 	);
 }
 
