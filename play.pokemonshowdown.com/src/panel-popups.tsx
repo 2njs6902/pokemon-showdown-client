@@ -1006,30 +1006,49 @@ class AvatarsPanel extends PSRoomPanel {
 	static readonly id = 'avatars';
 	static readonly routes = ['avatars'];
 	static readonly location = 'modal-popup';
+	avatars: string[] | null = null;
+	search = '';
+
+	override componentDidMount() {
+		super.componentDidMount();
+		PS.mainmenu.makeQuery('localavatars').then(response => {
+			this.avatars = Array.isArray(response) ? response : [];
+			this.forceUpdate();
+		});
+	}
+	setSearch = (event: Event) => {
+		this.search = (event.currentTarget as HTMLInputElement).value.toLowerCase().trim();
+		this.forceUpdate();
+	};
 
 	override render() {
 		const room = this.props.room;
-
-		const avatars: [number, string][] = [];
-		for (let i = 1; i <= 293; i++) {
-			if (i === 162 || i === 168) continue;
-			avatars.push([i, window.BattleAvatarNumbers?.[i] || `${i}`]);
-		}
+		const avatars = this.avatars?.filter(avatar => !this.search || avatar.toLowerCase().includes(this.search));
 
 		return <PSPanelWrapper room={room} width={1210}><div class="pad">
-			<label class="optlabel"><strong>Choose an avatar or </strong>
+			<label class="optlabel"><strong>Choose/Search an avatar or </strong>
 				<button class="button" data-cmd="/close"> Cancel</button>
 			</label>
-			<div class="avatarlist">
-				{avatars.map(([i, avatar]) => (
-					<button
-						data-cmd={`/closeand /avatar ${avatar}`} title={`/avatar ${avatar}`}
-						class={`option pixelated${avatar === PS.user.avatar ? ' cur' : ''}`}
-						style={`background-position: -${((i - 1) % 16) * 80 + 1}px -${Math.floor((i - 1) / 16) * 80 + 1}px`}
-					></button>
-				))}
+			<p class="avatar-search">
+				<input
+					type="search" class="textbox autofocus" placeholder="Search avatars..."
+					autocomplete="off" value={this.search} onInput={this.setSearch}
+				/>
+			</p>
+			<div class="avatarlist avatar-grid">
+				{this.avatars === null ? <p>Loading available avatars...</p> : avatars?.length ? avatars.map(avatar => {
+					const displayName = avatar.replace(/_/g, ' ').replace(/\b[a-z]/g, letter => letter.toUpperCase());
+					const image = `/sprites/trainers/${encodeURIComponent(avatar)}.png`;
+					return <div class="avatar-entry" key={avatar}>
+						<button
+							data-cmd={`/closeand /avatar ${avatar}`} title={`/avatar ${avatar}`}
+							class={`option pixelated${avatar === PS.user.avatar ? ' cur' : ''}`}
+							style={`background-image:url('${image}');background-position:center;background-repeat:no-repeat;background-size:contain`}
+						></button>
+						<span title={displayName}>{displayName}</span>
+					</div>;
+				}) : <p>{this.search ? 'No avatars matched your search.' : 'No custom trainer PNG files were found.'}</p>}
 			</div>
-			<div style="clear:left"></div>
 			<p><button class="button" data-cmd="/close">Cancel</button></p>
 		</div></PSPanelWrapper>;
 	}

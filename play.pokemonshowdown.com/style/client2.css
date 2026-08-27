@@ -2463,6 +2463,42 @@ pre.textbox.textbox-empty[placeholder]:before {
 	box-shadow: 1px 1px 1px #D5D5D5;
 }
 
+.avatar-search {
+	margin: 8px 0 12px;
+}
+.avatar-search input {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 420px;
+}
+.avatar-grid {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 8px;
+}
+.avatar-grid .avatar-entry {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 94px;
+	min-height: 110px;
+	text-align: center;
+}
+.avatar-grid .avatar-entry button {
+	float: none;
+	margin: 0 auto 4px;
+}
+.avatar-grid .avatar-entry span {
+	display: block;
+	box-sizing: border-box;
+	width: 94px;
+	padding: 0 2px;
+	font-size: 11px;
+	line-height: 14px;
+	overflow-wrap: anywhere;
+}
+
 .volume {
 	min-height: 34px;
 }
