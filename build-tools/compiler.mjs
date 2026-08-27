@@ -205,6 +205,13 @@ function compileToFile(srcFile, destFile, opts) {
 		if (VERBOSE) console.log(src + " ->");
 	}
 
+	// A bundle without source maps can be written synchronously. This is used
+	// for graphics.js, which must exist before update's cachebusting pass.
+	if (!opts.sourceMaps) {
+		outputFileSync(destFile, {map: null, code: results.map(result => result.code).join("\n") + "\n"}, opts);
+		return results.length;
+	}
+
 	combineResults(results, {
 		file: path.basename(destFile),
 		sourceRoot: opts.sourceRoot,
