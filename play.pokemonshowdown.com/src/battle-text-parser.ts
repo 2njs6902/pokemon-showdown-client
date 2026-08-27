@@ -399,25 +399,25 @@ export class BattleTextParser {
 		if (has('plural')) plural = true;
 		if (has('masculine')) feminine = neuter = false;
 		const initial = this.grammarInitial(value);
-		const vowel = /^[aeiou‡-ÊË-ÔÚ-ˆ˘-¸]/i.test(initial);
+		const vowel = /^[aeiou√†-√¶√®-√Ø√≤-√∂√π-√º]/i.test(initial);
 		let prefix = '';
 
 		if (language === 'fr') {
 			let article = '';
 			if (has('definite')) {
-				article = plural ? 'les ' : vowel ? 'lí' : feminine ? 'la ' : 'le ';
+				article = plural ? 'les ' : vowel ? 'l‚Äô' : feminine ? 'la ' : 'le ';
 			} else if (has('indefinite')) {
 				article = uncountable ? '' : plural ? 'des ' : feminine ? 'une ' : 'un ';
 			}
 			if (has('a')) {
 				if (article === 'le ') prefix = 'au ';
 				else if (article === 'les ') prefix = 'aux ';
-				else prefix = '‡ ' + article;
+				else prefix = '√† ' + article;
 			} else if (has('de')) {
 				if (article === 'le ') prefix = 'du ';
 				else if (article === 'les ') prefix = 'des ';
 				else if (article) prefix = 'de ' + article;
-				else prefix = vowel || /^h/i.test(initial) ? 'dí' : 'de ';
+				else prefix = vowel || /^h/i.test(initial) ? 'd‚Äô' : 'de ';
 			} else {
 				prefix = article;
 			}
@@ -433,27 +433,27 @@ export class BattleTextParser {
 			else prefix = article;
 			if (has('y')) prefix = /^(?:i|hi)(?![aeou])/i.test(initial) ? 'e ' : 'y ';
 		} else if (language === 'it') {
-			const special = /^(?:s[^aeiou‡ËÈÏÚ˘]|z|gn|ps|pn|x|y)/i.test(initial);
+			const special = /^(?:s[^aeiou√†√®√©√¨√≤√π]|z|gn|ps|pn|x|y)/i.test(initial);
 			let article = '';
 			if (has('definite')) {
 				if (plural) article = feminine ? 'le ' : (vowel || special ? 'gli ' : 'i ');
-				else if (vowel) article = 'lí';
+				else if (vowel) article = 'l‚Äô';
 				else article = feminine ? 'la ' : (special ? 'lo ' : 'il ');
 			} else if (has('indefinite')) {
-				if (uncountable) article = feminine ? (vowel ? 'dellí' : 'della ') : (vowel ? 'dellí' : special ? 'dello ' : 'del ');
-				else if (feminine) article = vowel ? 'uní' : 'una ';
+				if (uncountable) article = feminine ? (vowel ? 'dell‚Äô' : 'della ') : (vowel ? 'dell‚Äô' : special ? 'dello ' : 'del ');
+				else if (feminine) article = vowel ? 'un‚Äô' : 'una ';
 				else article = special ? 'uno ' : 'un ';
 			}
 			if (has('a') && has('definite')) {
-				prefix = this.italianContraction(article, ['al ', 'allo ', 'allí', 'alla ', 'ai ', 'agli ', 'alle ']);
+				prefix = this.italianContraction(article, ['al ', 'allo ', 'all‚Äô', 'alla ', 'ai ', 'agli ', 'alle ']);
 			} else if (has('di') && has('definite')) {
-				prefix = this.italianContraction(article, ['del ', 'dello ', 'dellí', 'della ', 'dei ', 'degli ', 'delle ']);
+				prefix = this.italianContraction(article, ['del ', 'dello ', 'dell‚Äô', 'della ', 'dei ', 'degli ', 'delle ']);
 			} else if (has('su') && has('definite')) {
-				prefix = this.italianContraction(article, ['sul ', 'sullo ', 'sullí', 'sulla ', 'sui ', 'sugli ', 'sulle ']);
+				prefix = this.italianContraction(article, ['sul ', 'sullo ', 'sull‚Äô', 'sulla ', 'sui ', 'sugli ', 'sulle ']);
 			} else if (has('a')) {
 				prefix = vowel ? 'ad ' : 'a ';
 			} else if (has('di')) {
-				prefix = vowel ? 'dí' : 'di ';
+				prefix = vowel ? 'd‚Äô' : 'di ';
 			} else if (has('su')) {
 				prefix = 'su ';
 			} else if (has('e')) {
@@ -470,11 +470,11 @@ export class BattleTextParser {
 			}
 		} else if (language === 'ko') {
 			const jong = this.koreanJongseong(value);
-			if (has('topic')) value += jong ? '?' : '?';
-			else if (has('object')) value += jong ? '?' : '?';
-			else if (has('subject')) value += jong ? '?' : '?';
-			else if (has('conjunctive')) value += jong ? '?' : '?';
-			else if (has('directional')) value += jong && jong !== 8 ? '??' : '?';
+			if (has('topic')) value += jong ? 'ÏùÄ' : 'Îäî';
+			else if (has('object')) value += jong ? 'ÏùÑ' : 'Î•º';
+			else if (has('subject')) value += jong ? 'Ïù¥' : 'Í∞Ä';
+			else if (has('conjunctive')) value += jong ? 'Í≥º' : 'ÏôÄ';
+			else if (has('directional')) value += jong && jong !== 8 ? 'ÏúºÎ°ú' : 'Î°ú';
 		}
 
 		value = prefix + value;
@@ -490,17 +490,17 @@ export class BattleTextParser {
 	}
 
 	private static grammarInitial(value: string) {
-		return value.replace(/\*\*/g, '').replace(/^[^A-Za-z¿-?0-9?-?]+/, '');
+		return value.replace(/\*\*/g, '').replace(/^[^A-Za-z√Ä-…è0-9„Ñ±-Ìû£]+/, '');
 	}
 
 	private static italianContraction(article: string, forms: string[]) {
-		const articles = ['il ', 'lo ', 'lí', 'la ', 'i ', 'gli ', 'le '];
+		const articles = ['il ', 'lo ', 'l‚Äô', 'la ', 'i ', 'gli ', 'le '];
 		const index = articles.indexOf(article);
 		return index < 0 ? forms[0] : forms[index];
 	}
 
 	private static koreanJongseong(value: string) {
-		const text = value.replace(/\*\*/g, '').replace(/[^A-Za-z0-9?-?]+$/g, '');
+		const text = value.replace(/\*\*/g, '').replace(/[^A-Za-z0-9Í∞Ä-Ìû£]+$/g, '');
 		if (!text) return 0;
 		const code = text.charCodeAt(text.length - 1);
 		if (code >= 0xAC00 && code <= 0xD7A3) return (code - 0xAC00) % 28;
