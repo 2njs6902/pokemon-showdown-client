@@ -11,7 +11,7 @@
 
 import preact from "../js/lib/preact";
 import type { Pokemon, ServerPokemon } from "./battle";
-import { Dex, PSUtils, toID } from "./battle-dex";
+import { Dex, type ID, PSUtils, toID } from "./battle-dex";
 import type { Args } from "./battle-text-parser";
 import { BattleTooltips } from "./battle-tooltips";
 import { Net } from "./client-connection";
@@ -1707,7 +1707,7 @@ export class ReconnectTimer extends preact.Component {
 
 export function PSIcon(
 	props: { pokemon: string | Pokemon | ServerPokemon | Dex.PokemonSet | null } |
-		{ item: string | null } | { type: string, b?: boolean, new?: boolean, tera?: boolean } |
+		{ item: string | null } | { type: string, b?: boolean, new?: boolean, tera?: boolean, modid?: ID } |
 		{ category: string } | { gender: string }
 ) {
 	if ('pokemon' in props) {
@@ -1719,12 +1719,13 @@ export function PSIcon(
 	if ('type' in props) {
 		let type = Dex.types.get(props.type).name;
 		if (!type) type = '???';
-		if (props.new) {
+		const isRejuvenation = props.modid?.includes('rejuvenation');
+		if (props.new && !isRejuvenation) {
 			return <span class={`typeicon typeicon-${type}${props.tera ? ' tera' : ''}`}>{type}</span>;
 		}
 		let sanitizedType = type.replace(/\?/g, '%3f');
 		return <img
-			src={`${Dex.resourcePrefix}sprites/types/${sanitizedType}.png`} alt={type}
+			src={`${isRejuvenation ? '' : Dex.resourcePrefix}sprites/${isRejuvenation ? 'rejuvenationtypes' : 'types'}/${sanitizedType}.png`} alt={type}
 			height="14" width="32" class={`pixelated${props.b ? ' b' : ''}`} style="vertical-align:middle"
 		/>;
 	}

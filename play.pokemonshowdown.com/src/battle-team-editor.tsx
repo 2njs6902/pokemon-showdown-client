@@ -70,6 +70,7 @@ export class TeamEditorState extends PSModel {
 	isNatDex = false;
 	isBDSP = false;
 	isChampions = false;
+	isRejuvenation = false;
 	formeLegality: 'normal' | 'hackmons' | 'custom' = 'normal';
 	abilityLegality: 'normal' | 'hackmons' = 'normal';
 	defaultLevel = 100;
@@ -104,6 +105,7 @@ export class TeamEditorState extends PSModel {
 		this.isNatDex = formatid.includes('nationaldex') || formatid.includes('natdex');
 		this.isBDSP = formatid.includes('bdsp');
 		this.isChampions = formatid.includes('champions');
+		this.isRejuvenation = formatid.includes('rejuvenation');
 		if (formatid.includes('almostanyability') || formatid.includes('aaa')) {
 			this.abilityLegality = 'hackmons';
 		} else {
@@ -509,7 +511,7 @@ export class TeamEditorState extends PSModel {
 	};
 	hpTypeMatters(set: Dex.PokemonSet): boolean {
 		if (this.gen < 2) return false;
-		if (this.gen > 7) return false;
+		if (this.gen > 7 && !this.isRejuvenation) return false;
 		for (const move of set.moves) {
 			const moveid = toID(move);
 			if (moveid.startsWith('hiddenpower')) return true;
@@ -1814,13 +1816,13 @@ class TeamTextbox extends preact.Component<{
 			<span class="detailcell">
 				<label>Shiny</label>{set.shiny ? 'Yes' : '\u2014'}
 			</span>
-			{editor.gen === 9 && !editor.isChampions ? (
+			{editor.gen === 9 && !editor.isChampions && !editor.isRejuvenation ? (
 				<span class="detailcell">
-					<label>Tera</label><PSIcon type={set.teraType || species.requiredTeraType || species.types[0]} />
+					<label>Tera</label><PSIcon type={set.teraType || species.requiredTeraType || species.types[0]} modid={editor.dex.modid} />
 				</span>
-			) : editor.hpTypeMatters(set) ? (
+			) : editor.isRejuvenation || editor.hpTypeMatters(set) ? (
 				<span class="detailcell">
-					<label>H. Power</label><PSIcon type={editor.getHPType(set)} />
+					<label>H. Power</label><PSIcon type={editor.getHPType(set)} modid={editor.dex.modid} />
 				</span>
 			) : (
 				<span class="detailcell">
@@ -3007,13 +3009,13 @@ class TeamEditorForm extends preact.Component<{
 										src={`${Dex.resourcePrefix}sprites/misc/shiny.png`} width={18} height={18} alt="Yes" style="margin-top: -2px"
 									/> : '\u2014'}
 								</span>}
-								{editor.gen === 9 && !editor.isChampions && <span class="detailcell">
+								{editor.gen === 9 && !editor.isChampions && !editor.isRejuvenation && <span class="detailcell">
 									<label>Tera</label> {}
-									<PSIcon type={set.teraType || species.requiredTeraType || species.types[0]} new={!editor.narrow} tera />
+									<PSIcon type={set.teraType || species.requiredTeraType || species.types[0]} modid={editor.dex.modid} new={!editor.narrow} tera />
 								</span>}
-								{editor.hpTypeMatters(set) && <span class="detailcell">
+								{(editor.isRejuvenation || editor.hpTypeMatters(set)) && <span class="detailcell">
 									<label>H.P.</label> {}
-									<PSIcon type={editor.getHPType(set)} new={!editor.narrow} />
+									<PSIcon type={editor.getHPType(set)} modid={editor.dex.modid} new={!editor.narrow} />
 								</span>}
 								{set.gender && set.gender !== 'N' && <span class="detailcell">
 									<label>Gender</label> {}
@@ -3022,7 +3024,7 @@ class TeamEditorForm extends preact.Component<{
 							</button>
 						</label>
 						<div>
-							{species.types.map(type => <><PSIcon type={type} new={!editor.narrow} /> </>)}
+							{species.types.map(type => <><PSIcon type={type} modid={editor.dex.modid} new={!editor.narrow} /> </>)}
 						</div>
 					</div></td>
 					<td rowSpan={2} class={`set-moves${overfull}`}><div class="border-collapse">
@@ -4029,18 +4031,18 @@ class DetailsForm extends preact.Component<{
 						)}
 					</p>
 				)}
-				{((!editor.isLetsGo && editor.gen === 7) || editor.isNatDex || species.baseSpecies === 'Unown') && <p>
+				{(editor.isRejuvenation || (!editor.isLetsGo && editor.gen === 7) || editor.isNatDex || species.baseSpecies === 'Unown') && <p>
 					<label class="label">Hidden Power Type: <select
 						name="hptype" class="select" onChange={this.changeHPType} value={editor.getHPType(set)}
 					>
-						{Dex.types.all().map(type => (
-							type.HPivs && <option value={type.name}>
+						{editor.dex.types.all().map(type => (
+							(type.HPivs || editor.isRejuvenation && ['Normal', 'Fairy'].includes(type.name)) && <option value={type.name}>
 								{type.name}
 							</option>
 						))}
 					</select></label>
 				</p>}
-				{editor.gen === 9 && !editor.isChampions && <p>
+				{editor.gen === 9 && !editor.isChampions && !editor.isRejuvenation && <p>
 					<label class="label" title="Tera Type">
 						Tera Type: {}
 						{species.requiredTeraType && editor.formeLegality === 'normal' ? (
@@ -4052,7 +4054,7 @@ class DetailsForm extends preact.Component<{
 							>
 								<button><selectedcontent></selectedcontent></button>
 								{Dex.types.all().map(type => (
-									<option value={type.name}><PSIcon type={type.name} new tera /></option>
+									<option value={type.name}><PSIcon type={type.name} modid={editor.dex.modid} new tera /></option>
 								))}
 							</select>
 						)}
