@@ -74,6 +74,13 @@ default:
 	break;
 }
 
+if (full) {
+	// Some deployment commands create an empty graphics.js as a placeholder.
+	// Its fresh timestamp can make the incremental compiler skip the real
+	// BattleScene animation bundle, so remove it before every full build.
+	fs.rmSync('play.pokemonshowdown.com/data/graphics.js', {force: true});
+}
+
 execSync(`node ./build-tools/update` + full, options);
 
 if (full) {

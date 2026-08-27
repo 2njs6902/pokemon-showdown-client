@@ -2476,6 +2476,10 @@ pre.textbox.textbox-empty[placeholder]:before {
 	flex-wrap: wrap;
 	align-items: flex-start;
 	gap: 8px;
+	justify-content: center;
+	max-height: calc(90vh - 150px);
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 .avatar-grid .avatar-entry {
 	display: flex;

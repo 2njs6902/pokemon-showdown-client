@@ -1032,7 +1032,7 @@ class AvatarsPanel extends PSRoomPanel {
 		const room = this.props.room;
 		const avatars = this.avatars?.filter(avatar => !this.search || avatar.toLowerCase().includes(this.search));
 
-		return <PSPanelWrapper room={room} width={1210}><div class="pad">
+		return <PSPanelWrapper room={room} fullSize><div class="pad">
 			<label class="optlabel"><strong>Choose/Search an avatar or </strong>
 				<button class="button" data-cmd="/close"> Cancel</button>
 			</label>
