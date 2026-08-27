@@ -4035,7 +4035,7 @@ class DetailsForm extends preact.Component<{
 					<label class="label">Hidden Power Type: <select
 						name="hptype" class="select" onChange={this.changeHPType} value={editor.getHPType(set)}
 					>
-						{editor.dex.types.all().map(type => (
+						{Dex.types.all().map(type => (
 							(type.HPivs || editor.isRejuvenation && ['Normal', 'Fairy'].includes(type.name)) && <option value={type.name}>
 								{type.name}
 							</option>
