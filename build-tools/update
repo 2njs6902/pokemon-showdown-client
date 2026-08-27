@@ -93,6 +93,7 @@ const compileOpts = Object.assign(eval('(' + fs.readFileSync('.babelrc') + ')'),
 	ignore: ['play.pokemonshowdown.com/src/battle-animations.js', 'play.pokemonshowdown.com/src/battle-animations-moves.js'],
 });
 if (process.argv[2] === 'full') {
+	compileOpts.incremental = false;
 	delete compileOpts.ignore;
 	compiler.compileToDir(
 		['caches/pokemon-showdown/server/chat-formatter.ts', 'caches/pokemon-showdown/sim/teams.ts'],
