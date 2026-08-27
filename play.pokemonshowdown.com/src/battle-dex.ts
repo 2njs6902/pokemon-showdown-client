@@ -43,6 +43,7 @@ export declare namespace Dex {
 	export type StatNameExceptHP = DexData.StatNameExceptHP;
 	export type BoostStatName = DexData.BoostStatName;
 	export type TypeName = DexData.TypeName;
+	export type CategoryName = DexData.CategoryName;
 	export type StatusName = DexData.StatusName;
 	export type GenderName = DexData.GenderName;
 	export type NatureName = DexData.NatureName;
@@ -61,7 +62,6 @@ declare const require: any;
 declare const global: any;
 declare const process: any;
 
-// Ignore, just handles what the type of window the script uses
 if (typeof window === 'undefined') {
 	// Node
 	global.window = global;
@@ -78,18 +78,51 @@ export function toID(text: any) {
 	} else if (text?.userid) {
 		text = text.userid;
 	}
-	
 	if (typeof text !== 'string' && typeof text !== 'number') return '' as ID;
-
-	// TESTING
-	const result = `${text}`.toLowerCase().replace(/[^a-z0-9]+/g, '');
-	console.log("This is the output from toID Function: ", result);
-
 	return `${text}`.toLowerCase().replace(/[^a-z0-9]+/g, '') as ID;
 }
 
 export function toUserid(text: any) {
 	return toID(text);
+}
+
+const TEXT_LANGUAGES: { [language: string]: string } = {
+	english: 'en', german: 'de', spanish: 'es', french: 'fr', italian: 'it',
+	japanese: 'ja', korean: 'ko', simplifiedchinese: 'zh-cn', traditionalchinese: 'zh-tw',
+};
+
+interface ClientDexText {
+	getLanguage(): string;
+	get(effect: Species | Item | Ability | Move, lang?: string): BattleTextEntry;
+}
+
+function getTextLanguage() {
+	const preference = Dex.prefs('language') || Dex.prefs('serversettings')?.language || 'english';
+	const language = TEXT_LANGUAGES[preference] || 'en';
+	return language === 'en' && Dex.afdMode === true ? 'en-afd' : language;
+}
+
+function getTextEntry(effect: Species | Item | Ability | Move, gen: number, lang: string): BattleTextEntry {
+	const tableName = `${effect.effectType === 'Species' ? 'Pokedex' : `${effect.effectType}s`}` as keyof BattleTextData;
+	const english = BattleText.en?.[tableName]?.[effect.id] || {};
+	const localized = BattleText[lang]?.[tableName]?.[effect.id] || {};
+	const entry: BattleTextEntry = { ...english, ...localized };
+	for (let i = 1; i <= 8; i++) {
+		const genName = `gen${i}`;
+		const englishGen = english[genName];
+		const localizedGen = localized[genName];
+		if (typeof englishGen === 'object' || typeof localizedGen === 'object') {
+			entry[genName] = {
+				...(typeof englishGen === 'object' ? englishGen : {}),
+				...(typeof localizedGen === 'object' ? localizedGen : {}),
+			};
+		}
+	}
+	for (let i = 8; i >= gen; i--) {
+		const genName = `gen${i}`;
+		Object.assign(entry, english[genName] || {}, localized[genName] || {});
+	}
+	return entry;
 }
 
 type Comparable = number | string | boolean | Comparable[] | { reverse: Comparable };
@@ -169,6 +202,17 @@ export const PSUtils = new class {
 		if (!callback) return (array as any[]).sort(PSUtils.compare);
 		return array.sort((a, b) => PSUtils.compare(callback(a), callback(b)));
 	}
+	normalizeError(err: any): string {
+		const stack = err.stack || '';
+		const messagePrefix = `${err.name}: ${err.message}`;
+
+		// Firefox doesn't put the error message inside the stack trace,
+		// but Chrome/Safari does
+		if (stack && !stack.startsWith(messagePrefix)) {
+			return `${messagePrefix}\n${stack}`;
+		}
+		return stack || messagePrefix;
+	}
 };
 
 /**
@@ -190,8 +234,6 @@ export function toName(name: any) {
 		''
 	);
 	name = name.replace(/[\u239b-\u23b9]/g, '');
-
-	console.log("This is the output of toName function: ", name);
 
 	return name;
 }
@@ -217,6 +259,7 @@ export interface TeambuilderSpriteData {
 	spriteid?: string;
 	shiny?: boolean;
 	url?: string;
+	pixelated?: boolean;
 }
 
 export const Dex = new class implements ModdedDex {
@@ -238,7 +281,7 @@ export const Dex = new class implements ModdedDex {
 	readonly statNamesExceptHP: readonly Dex.StatNameExceptHP[] = ['atk', 'def', 'spa', 'spd', 'spe'];
 
 	pokeballs: string[] | null = null;
-	
+
 	resourcePrefix = (() => {
 		if (window.Config?.routes?.client) return `//${Config.routes.client}/`;
 		return `${window.location.origin}/`;
@@ -250,6 +293,7 @@ export const Dex = new class implements ModdedDex {
 	})();
 
 	loadedSpriteData = { xy: 1, bw: 0 };
+	loadedTextData: { [lang: string]: 1 | Promise<void> } = { en: 1 };
 	moddedDexes: { [mod: string]: ModdedDex } = {};
 
 	/**
@@ -289,8 +333,8 @@ export const Dex = new class implements ModdedDex {
 		if (dex.gen === 8 && formatid.includes('bdsp')) {
 			dex = Dex.mod('gen8bdsp' as ID);
 		}
-		if (dex.gen === 9 && formatid.includes('legends')) {
-			dex = Dex.mod('gen9legendsou' as ID);
+		if (dex.gen === 9 && formatid.includes('champions')) {
+			dex = Dex.mod('champions' as ID);
 		}
 		if (dex.gen === 9 && formatid.includes('rejuvenation')) {
 			dex = Dex.mod('gen9rejuvenation' as ID);
@@ -362,6 +406,13 @@ export const Dex = new class implements ModdedDex {
 		// @ts-expect-error this is what I get for calling it Storage...
 		return window.Storage?.prefs ? window.Storage.prefs(prop) : window.PS?.prefs?.[prop];
 	}
+
+	text: ClientDexText = {
+		getLanguage: getTextLanguage,
+		get: (effect: Species | Item | Ability | Move, lang = getTextLanguage()) => {
+			return getTextEntry(effect, 9, lang);
+		},
+	};
 
 	getShortName(name: string) {
 		let shortName = name.replace(/[^A-Za-z0-9]+$/, '');
@@ -603,6 +654,29 @@ export const Dex = new class implements ModdedDex {
 		el.src = path + 'data/pokedex-mini-bw.js' + qs;
 		document.getElementsByTagName('body')[0].appendChild(el);
 	}
+	loadTextData(lang = this.text.getLanguage()): Promise<void> {
+		lang = TEXT_LANGUAGES[lang] || lang;
+		if (BattleText[lang] || typeof document === 'undefined') return Promise.resolve();
+		const existing = this.loadedTextData[lang];
+		if (existing) return existing === 1 ? Promise.resolve() : existing;
+
+		const loadScript = (src: string) => new Promise<void>((resolve, reject) => {
+			const el = document.createElement('script');
+			el.src = src;
+			el.onload = () => resolve();
+			el.onerror = () => reject(new Error(`Failed to load text data from ${src}`));
+			document.getElementsByTagName('body')[0].appendChild(el);
+		});
+		let loading = loadScript(Config.testclient ? `data/text/${lang}.js` : `${this.resourcePrefix}data/text/${lang}.js`);
+		if (Config.testclient) {
+			loading = loading.catch(() => loadScript(`https://play.pokemonshowdown.com/data/text/${lang}.js`));
+		}
+		loading = loading.catch(() => {
+			delete this.loadedTextData[lang];
+		});
+		this.loadedTextData[lang] = loading;
+		return loading;
+	}
 	getSpriteData(pokemon: Pokemon | Species | string, isFront: boolean, options: {
 		gen?: number,
 		shiny?: boolean,
@@ -647,14 +721,6 @@ export const Dex = new class implements ModdedDex {
 			cryurl: '',
 			shiny: options.shiny,
 		};
-
-		// console.log('[Sprite Debug]', {
-		// 	pokemon: pokemon instanceof Pokemon ? pokemon.speciesForme : pokemon,
-		// 	isFront,
-		// 	options,
-		// 	spriteData,
-    	// });
-
 		let name = species.spriteid;
 		let dir;
 		let facing;
@@ -695,37 +761,19 @@ export const Dex = new class implements ModdedDex {
 			let baseSpeciesid = toID(species.baseSpecies);
 			spriteData.cryurl = 'audio/cries/' + baseSpeciesid;
 			let formeid = species.formeid;
-			if (species.isMega || formeid && (
-				formeid === '-crowned' ||
-				formeid === '-eternal' ||
-				formeid === '-eternamax' ||
-				formeid === '-four' ||
-				formeid === '-hangry' ||
-				formeid === '-hero' ||
-				formeid === '-lowkey' ||
-				formeid === '-noice' ||
-				formeid === '-primal' ||
-				formeid === '-rapidstrike' ||
-				formeid === '-roaming' ||
-				formeid === '-school' ||
-				formeid === '-sky' ||
-				formeid === '-starter' ||
-				formeid === '-super' ||
-				formeid === '-therian' ||
-				formeid === '-unbound' ||
-				baseSpeciesid === 'calyrex' ||
-				baseSpeciesid === 'kyurem' ||
-				baseSpeciesid === 'cramorant' ||
-				baseSpeciesid === 'indeedee' ||
-				baseSpeciesid === 'lycanroc' ||
-				baseSpeciesid === 'necrozma' ||
-				baseSpeciesid === 'oinkologne' ||
-				baseSpeciesid === 'oricorio' ||
-				baseSpeciesid === 'slowpoke' ||
-				baseSpeciesid === 'tatsugiri' ||
-				baseSpeciesid === 'zygarde'
-			)) {
-				spriteData.cryurl += formeid;
+			const specialFormeCries = [
+				'-bloodmoon', '-crowned', '-eternal', '-eternamax', '-four', '-hangry', '-hero', '-lowkey', '-noice', '-primal', '-rapidstrike', '-roaming', '-school', '-sky', '-starter', '-super', '-therian', '-unbound',
+			];
+			const specialBaseSpeciesCries = [
+				'calyrex', 'kyurem', 'cramorant', 'indeedee', 'lycanroc', 'necrozma', 'oinkologne', 'oricorio', 'slowpoke', 'tatsugiri', 'zygarde',
+			];
+			if (species.isMega ||
+				formeid && (specialFormeCries.includes(formeid) || specialBaseSpeciesCries.includes(baseSpeciesid))) {
+				if (species.isMega && (baseSpeciesid === 'meowstic' || baseSpeciesid === 'tatsugiri')) {
+					spriteData.cryurl += '-mega';
+				} else {
+					spriteData.cryurl += formeid;
+				}
 			}
 			spriteData.cryurl += '.mp3';
 		}
@@ -861,9 +909,6 @@ export const Dex = new class implements ModdedDex {
 			spriteData.y += -11;
 		}
 
-		// Testing
-		// console.log('[Sprite Debug] Final URL:', spriteData.url);
-
 		return spriteData;
 	}
 
@@ -922,7 +967,7 @@ export const Dex = new class implements ModdedDex {
 		let left = (num % 12) * 40;
 		let fainted = ((pokemon as Pokemon | ServerPokemon)?.fainted ?
 			`;opacity:.3;filter:grayscale(100%) brightness(.5)` : ``);
-		return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-sheet.png?v21) no-repeat scroll -${left}px -${top}px${fainted}`;
+		return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-sheet.png?v22) no-repeat scroll -${left}px -${top}px${fainted}`;
 	}
 
 	getTeambuilderSpriteData(pokemon: any, dex: ModdedDex = Dex): TeambuilderSpriteData {
@@ -1049,6 +1094,7 @@ export const Dex = new class implements ModdedDex {
 		else if (gen <= 2 && species.gen <= 2) spriteData.spriteDir = 'sprites/gen2';
 		else if (gen <= 3 && species.gen <= 3) spriteData.spriteDir = 'sprites/gen3';
 		else if (gen <= 4 && species.gen <= 4) spriteData.spriteDir = 'sprites/gen4';
+		spriteData.pixelated = true;
 		spriteData.x = 10;
 		spriteData.y = 5;
 		return spriteData;
@@ -1056,13 +1102,10 @@ export const Dex = new class implements ModdedDex {
 
 	getTeambuilderSprite(pokemon: any, dex?: ModdedDex, xOffset = 0, yOffset = 0) {
 		if (!pokemon) return '';
-
 		const data = this.getTeambuilderSpriteData(pokemon, dex);
-		const shiny = data.shiny ? '-shiny' : '';
-		const resize = data.h ? `background-size:${data.h}px` : '';
-		const url = data.url ?? `${Dex.resourcePrefix}${data.spriteDir}${shiny}/${data.spriteid}.png`;
-
-		return `background-image:url(${url});background-position:${data.x + xOffset}px ${data.y + yOffset}px;background-repeat:no-repeat;${resize}`;
+		const shiny = (data.shiny ? '-shiny' : '');
+		const resize = (data.h ? `background-size:${data.h}px` : '');
+		return `background-image:url(${Dex.resourcePrefix}${data.spriteDir}${shiny}/${data.spriteid}.png);background-position:${data.x + xOffset}px ${data.y + yOffset}px;background-repeat:no-repeat;${resize}`;
 	}
 	getItemIcon(item: any) {
 		let itemid = '' as ID;
@@ -1156,10 +1199,17 @@ export class ModdedDex {
 	pokeballs: string[] | null = null;
 	constructor(modid: ID) {
 		this.modid = modid;
-		const gen = parseInt(modid.charAt(3), 10);
-		if (!modid.startsWith('gen') || !gen) throw new Error("Unsupported modid");
+		let gen = parseInt(modid.charAt(3), 10);
+		if (this.modid === 'champions') gen = 9;
+		if ((modid !== 'champions' && !modid.startsWith('gen')) || !gen) throw new Error("Unsupported modid");
 		this.gen = gen;
 	}
+	text: ClientDexText = {
+		getLanguage: getTextLanguage,
+		get: (effect: Species | Item | Ability | Move, lang = getTextLanguage()) => {
+			return getTextEntry(effect, this.gen, lang);
+		},
+	};
 	moves = {
 		get: (name: string): Move => {
 			let id = toID(name);
@@ -1256,13 +1306,16 @@ export class ModdedDex {
 	species = {
 		get: (name: string): Species => {
 			let id = toID(name);
+			const originalId = id;
 			if (window.BattleAliases && id in BattleAliases) {
 				name = BattleAliases[id];
 				id = toID(name);
 			}
+			const baseSpecies = Dex.species.get(originalId || name);
+			id = baseSpecies.id;
 			if (this.cache.Species.hasOwnProperty(id)) return this.cache.Species[id];
 
-			let data = { ...Dex.species.get(name) };
+			let data = { ...baseSpecies };
 
 			for (let i = Dex.gen - 1; i >= this.gen; i--) {
 				const table = window.BattleTeambuilderTable[`gen${i}`];
