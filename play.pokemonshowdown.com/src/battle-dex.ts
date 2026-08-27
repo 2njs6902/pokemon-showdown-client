@@ -984,9 +984,7 @@ export const Dex = new class implements ModdedDex {
 			}
 		}
 		
-		const currentFormat = toID((window as any).app?.curRoom?.curTeam?.format || '' );
-
-		if (dex.modid === 'rejuvenation' || currentFormat.includes('rejuvenation')) {
+		if (dex.modid.includes('rejuvenation')) {
 			const shiny = pokemon.shiny ? '-shiny' : '';
 
 			const femaleSprites = [
@@ -1105,7 +1103,8 @@ export const Dex = new class implements ModdedDex {
 		const data = this.getTeambuilderSpriteData(pokemon, dex);
 		const shiny = (data.shiny ? '-shiny' : '');
 		const resize = (data.h ? `background-size:${data.h}px` : '');
-		return `background-image:url(${Dex.resourcePrefix}${data.spriteDir}${shiny}/${data.spriteid}.png);background-position:${data.x + xOffset}px ${data.y + yOffset}px;background-repeat:no-repeat;${resize}`;
+		const url = data.url ?? `${Dex.resourcePrefix}${data.spriteDir}${shiny}/${data.spriteid}.png`;
+		return `background-image:url(${url});background-position:${data.x + xOffset}px ${data.y + yOffset}px;background-repeat:no-repeat;${resize}`;
 	}
 	getItemIcon(item: any) {
 		let itemid = '' as ID;
@@ -1137,12 +1136,9 @@ export const Dex = new class implements ModdedDex {
 		type = this.types.get(type).name;
 		if (!type) type = '???';
 
-		const currentFormat = toID((window as any).app?.curRoom?.curTeam?.format || '');
-
 		const isRejuvenation =
 			modid?.includes('rejuvenation') ||
-			this.modid.includes('rejuvenation') ||
-			currentFormat.includes('rejuvenation');
+			this.modid.includes('rejuvenation');
 
 		const sanitizedType = type === '???' ? 'unknown' : type;
 		const spriteDir = isRejuvenation
