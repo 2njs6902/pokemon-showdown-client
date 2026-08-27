@@ -3529,6 +3529,7 @@ export class Battle {
 			}
 			if (this.tier.includes(`Champions`)) {
 				this.dex = Dex.mod('champions' as ID);
+			}
 			if (this.tier.includes('Rejuvenation')) {
 				(this.scene as BattleScene).mod = 'rejuvenation';
 			}
