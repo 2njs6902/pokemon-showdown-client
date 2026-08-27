@@ -454,11 +454,9 @@ export const PSLoginServer = new class {
 		// 	return Promise.resolve(null);
 		// }
 		data.act = act;
-		let url = PS.server.id === 'pcrshowdown' ?
-			'https://play.pokemonshowdown.com/~~pcrshowdown/action.php' :
-			'/~~' + PS.server.id + '/action.php';
+		let url = '/~~' + PS.server.id + '/action.php';
 		if (location.pathname.endsWith('.html')) {
-			if (url.startsWith('/')) url = 'https://' + Config.routes.client + url;
+			url = 'https://' + Config.routes.client + url;
 			if (typeof POKEMON_SHOWDOWN_TESTCLIENT_KEY === 'string') {
 				data.sid = POKEMON_SHOWDOWN_TESTCLIENT_KEY.replace(/%2C/g, ',');
 			}

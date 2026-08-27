@@ -1,7 +1,10 @@
 {
 	"name": "pokemon-showdown-client",
 	"compatibility_date": "2026-08-18",
+	"main": "./worker.js",
 	"assets": {
-		"directory": "./play.pokemonshowdown.com"
+		"directory": "./play.pokemonshowdown.com",
+		"binding": "ASSETS",
+		"run_worker_first": ["/~~pcrshowdown/action.php"]
 	}
 }

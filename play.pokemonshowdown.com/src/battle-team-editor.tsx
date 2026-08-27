@@ -2960,7 +2960,7 @@ class TeamEditorForm extends preact.Component<{
 		const isCur = TeamEditorState.clipboard?.teams?.[editor.team.key]?.sets[i] ? ' cur' : '';
 		const overfull = set.moves.length > 5 ? ' overfull' : set.moves.length > 4 ? ' overfull overfull5' : '';
 		return <div class={`set-form${isCur}`} data-set-index={i}>
-			<div class="set-actions">
+			<div style="text-align:right">
 				<button class="option" onClick={this.copySet} value={i}>
 					<i class="fa fa-copy" aria-hidden></i> {
 						isCur ? "Deselect" :
