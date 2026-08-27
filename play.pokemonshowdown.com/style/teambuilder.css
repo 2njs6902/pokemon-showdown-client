@@ -754,6 +754,8 @@ you can't delete it by pressing Backspace */
 	width: 100%;
 }
 .set-form .set-details .textbox {
+	display: flex;
+	align-items: stretch;
 	height: 34px;
 	padding: 1px;
 	overflow: hidden;
@@ -857,14 +859,17 @@ you can't delete it by pressing Backspace */
 	background: none;
 }
 .set-form .detailcell {
-	float: left;
+	float: none;
+	flex: 1 1 0;
+	min-width: 0;
 	height: 27px;
 	margin-bottom: 1px;
+	box-sizing: border-box;
 }
 .set-form .detailcell + .detailcell {
 	border-left: 1px solid #888;
-	margin-left: 2px;
-	padding-left: 6px;
+	margin-left: 0;
+	padding-left: 4px;
 }
 .tiny-layout .detailcell + .detailcell {
 	margin-left: 0;
