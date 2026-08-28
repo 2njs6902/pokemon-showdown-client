@@ -1339,7 +1339,7 @@ export class BattleTextParser {
 
 			if (!kwArgs.from) {
 				template = this.template(percentage ? 'damagePercentage' : 'damage');
-				percentage = percentage ? percentage.replace(/%$/, '') : '';
+				percentage = percentage ? percentage.replace(/%+$/, '') : '';
 				return line1 + this.render(template, {
 					POKEMON: this.pokemon(pokemon), PERCENTAGE: percentage,
 				});

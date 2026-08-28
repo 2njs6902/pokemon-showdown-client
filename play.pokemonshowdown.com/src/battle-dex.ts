@@ -595,6 +595,55 @@ export const Dex = new class implements ModdedDex {
 		},
 	};
 
+	toDexNumber(pokemon: Pokemon | Species | string | null | undefined) {
+		if (!pokemon) return 0;
+		if (pokemon instanceof Pokemon) {
+			return this.species.get(pokemon.getSpeciesForme()).num;
+		}
+		if (typeof pokemon === 'string') {
+			return this.species.get(pokemon).num;
+		}
+		return pokemon.num;
+	}
+
+	formNumber(pokemon: Pokemon | Species | string | null | undefined) {
+		if (!pokemon) return 0;
+		let species: Species;
+		if (pokemon instanceof Pokemon) {
+			species = this.species.get(pokemon.getSpeciesForme());
+		} else if (typeof pokemon === 'string') {
+			species = this.species.get(pokemon);
+		} else {
+			species = this.species.get(pokemon.name);
+		}
+		const baseSpecies = this.species.get(
+			species.baseSpecies || species.name
+		);
+		const formeOrder = baseSpecies.formeOrder || [
+			baseSpecies.name,
+			...(baseSpecies.cosmeticFormes || []),
+			...(baseSpecies.otherFormes || []),
+		];
+		const formeNumber = formeOrder.indexOf(species.name);
+		return formeNumber >= 0 ? formeNumber : 0;
+	}
+
+	hasFemaleIcon(pokemon: Pokemon | Species | string | null | undefined, femaleIconNumbers: number[]) {
+		if (!pokemon) return false;
+
+		let species: Species;
+
+		if (pokemon instanceof Pokemon) {
+			species = this.species.get(pokemon.getSpeciesForme());
+		} else if (typeof pokemon === 'string') {
+			species = this.species.get(pokemon);
+		} else {
+			species = this.species.get(pokemon.name);
+		}
+
+		return femaleIconNumbers.includes(species.num);
+	}
+
 	types = {
 		allCache: null as Type[] | null,
 		namesCache: null as Dex.TypeName[] | null,
@@ -850,10 +899,20 @@ export const Dex = new class implements ModdedDex {
 		}
 		if (!animatedSprite) {
 			if (options.mod) {
-				let modDir = options.mod;
-				if (!spriteData.isFrontSprite) modDir += '-back';
-				if (options.shiny) modDir += '-shiny';
-				spriteData.url = `sprites/${modDir}/${name}.png`;
+				if (options.mod === 'rejuvenation') {
+					let battlerDir: string;
+					if (spriteData.isFrontSprite) {
+						battlerDir = options.shiny ? 'shiny' : 'front';
+					} else {
+						battlerDir = options.shiny ? 'back-shiny' : 'back';
+					}
+					spriteData.url = `sprites/rejuvenation/battler/${battlerDir}/${name}.png`;
+				} else {
+					let modDir = options.mod;
+					if (!spriteData.isFrontSprite) modDir += '-back';
+					if (options.shiny) modDir += '-shiny';
+					spriteData.url = `sprites/${modDir}/${name}.png`;
+				}
 			} else {
 				dir = (baseDir || 'gen5') + dir;
 				spriteData.url += dir + '/' + name + '.png';
@@ -961,12 +1020,64 @@ export const Dex = new class implements ModdedDex {
 			// @ts-expect-error safe, but too lazy to cast
 			id = toID(pokemon.volatiles.formechange[1]);
 		}
+		let fainted = ((pokemon as Pokemon | ServerPokemon)?.fainted ?
+			`;opacity:.3;filter:grayscale(100%) brightness(.5)` : ``);
+		if (this.modid.includes('rejuvenation')) {
+			const dexNumber = this.toDexNumber(id);
+			const formNumber = this.formNumber(id);
+			const isShiny = !!pokemon?.shiny;
+
+			const femaleIconNumbers = [
+				25, 26, 84, 85, 118, 119, 123, 129, 130, 190,
+				202, 208, 212, 214, 224, 232, 297, 315, 322, 323,
+				397, 398, 399, 400, 401, 402, 407, 415, 424, 449,
+				450, 456, 457, 470, 521, 543, 544, 545, 570, 571,
+				592, 593, 605, 606, 636, 637, 668, 676, 678, 739,
+				740, 744, 745, 876, 902, 916,
+			];
+
+			// Each forme uses two columns: normal, then shiny.
+			const column = formNumber * 2 + (isShiny ? 1 : 0);
+			const left = column * 32;
+
+			const femaleIndex = femaleIconNumbers.indexOf(dexNumber);
+			const useFemaleIcon =
+				pokemon?.gender === 'F' &&
+				femaleIndex >= 0;
+
+			if (useFemaleIcon) {
+				const top = femaleIndex * 32;
+
+				return `background:transparent ` +
+					`url(sprites/rejuvenation/pokemonicons/female.png) ` +
+					`no-repeat scroll -${left}px -${top}px${fainted}`;
+			}
+
+			// These mons take too much space so they have their own sheets.
+			const specificPokemon = [
+				201, 479, 493, 649, 666, 669, 670,
+				671, 676, 718, 773, 774, 978,
+			];
+
+			if (specificPokemon.includes(dexNumber)) {
+				return `background:transparent ` +
+					`url(sprites/rejuvenation/pokemonicons/${dexNumber}.png) ` +
+					`no-repeat scroll -${left}px 0px${fainted}`;
+			}
+
+			// National Dex number 1 occupies zero-based row 0.
+			const top = Math.max(0, dexNumber - 1) * 32;
+
+			return `background:transparent ` +
+				`url(sprites/rejuvenation/pokemonicons/pokemonicons-sheet.png) ` +
+				`no-repeat scroll -${left}px -${top}px${fainted}`;
+		}
+		
 		let num = this.getPokemonIconNum(id, pokemon?.gender === 'F', facingLeft);
 
 		let top = Math.floor(num / 12) * 30;
 		let left = (num % 12) * 40;
-		let fainted = ((pokemon as Pokemon | ServerPokemon)?.fainted ?
-			`;opacity:.3;filter:grayscale(100%) brightness(.5)` : ``);
+
 		return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-sheet.png?v22) no-repeat scroll -${left}px -${top}px${fainted}`;
 	}
 
@@ -1030,7 +1141,7 @@ export const Dex = new class implements ModdedDex {
 			}
 
 			return {
-				url: `sprites/rejuvenation${shiny}/${spriteid}.png`,
+				url: `sprites/rejuvenation/battler/${shiny ? 'shiny' : 'front'}/${spriteid}.png`,
 				x: 10,
 				y: 5,
 			};

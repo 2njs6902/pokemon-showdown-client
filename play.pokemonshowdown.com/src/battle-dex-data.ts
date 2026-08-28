@@ -1541,6 +1541,7 @@ export class Species implements Effect {
 	readonly tags: readonly string[];
 
 	// format data
+	readonly formeOrder: readonly string[] | null;
 	readonly otherFormes: readonly string[] | null;
 	readonly cosmeticFormes: readonly string[] | null;
 	readonly evos: readonly string[] | null;
@@ -1597,6 +1598,7 @@ export class Species implements Effect {
 		this.eggGroups = data.eggGroups || [];
 		this.tags = data.tags || [];
 
+		this.formeOrder = data.formeOrder || null;
 		this.otherFormes = data.otherFormes || null;
 		this.cosmeticFormes = data.cosmeticFormes || null;
 		this.evos = data.evos || null;
