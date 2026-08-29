@@ -606,17 +606,17 @@ export const Dex = new class implements ModdedDex {
 		return pokemon.num;
 	}
 
-	formNumber(pokemon: Pokemon | Species | string | null | undefined) {
+	formNumber(pokemon: Pokemon | Species | string | null | undefined, dex: ModdedDex = this) {
 		if (!pokemon) return 0;
 		let species: Species;
 		if (pokemon instanceof Pokemon) {
-			species = this.species.get(pokemon.getSpeciesForme());
+			species = dex.species.get(pokemon.getSpeciesForme());
 		} else if (typeof pokemon === 'string') {
-			species = this.species.get(pokemon);
+			species = dex.species.get(pokemon);
 		} else {
-			species = this.species.get(pokemon.name);
+			species = dex.species.get(pokemon.name);
 		}
-		const baseSpecies = this.species.get(
+		const baseSpecies = dex.species.get(
 			species.baseSpecies || species.name
 		);
 		const formeOrder = baseSpecies.formeOrder || [
@@ -906,7 +906,7 @@ export const Dex = new class implements ModdedDex {
 					} else {
 						battlerDir = options.shiny ? 'back-shiny' : 'back';
 					}
-					spriteData.url = `sprites/rejuvenation/battler/${battlerDir}/${name}.png`;
+					spriteData.url = `sprites/rejuvenation/battlers/${battlerDir}/${name}.png`;
 				} else {
 					let modDir = options.mod;
 					if (!spriteData.isFrontSprite) modDir += '-back';
@@ -998,7 +998,7 @@ export const Dex = new class implements ModdedDex {
 		return num;
 	}
 
-	getPokemonIcon(pokemon: string | Pokemon | ServerPokemon | Dex.PokemonSet | null, facingLeft?: boolean) {
+	getPokemonIcon(pokemon: string | Pokemon | ServerPokemon | Dex.PokemonSet | null, facingLeft?: boolean, dex: ModdedDex = this) {
 		if (pokemon === 'pokeball') {
 			return `background:transparent url(${Dex.resourcePrefix}sprites/pokemonicons-pokeball-sheet.png) no-repeat scroll -0px 4px`;
 		} else if (pokemon === 'pokeball-statused') {
@@ -1010,6 +1010,9 @@ export const Dex = new class implements ModdedDex {
 		}
 
 		let id = toID(pokemon);
+		if (pokemon instanceof Pokemon) {
+			dex = pokemon.side.battle.dex;
+		}
 		if (!pokemon || typeof pokemon === 'string') pokemon = null;
 		// @ts-expect-error safe, but too lazy to cast
 		if (pokemon?.speciesForme) id = toID(pokemon.speciesForme);
@@ -1022,9 +1025,9 @@ export const Dex = new class implements ModdedDex {
 		}
 		let fainted = ((pokemon as Pokemon | ServerPokemon)?.fainted ?
 			`;opacity:.3;filter:grayscale(100%) brightness(.5)` : ``);
-		if (this.modid.includes('rejuvenation')) {
-			const dexNumber = this.toDexNumber(id);
-			const formNumber = this.formNumber(id);
+		if (dex.modid.includes('rejuvenation')) {
+			const dexNumber = dex.species.get(id).num;
+			const formNumber = this.formNumber(dex.species.get(id), dex);
 			const isShiny = !!pokemon?.shiny;
 
 			const femaleIconNumbers = [
@@ -1141,7 +1144,7 @@ export const Dex = new class implements ModdedDex {
 			}
 
 			return {
-				url: `sprites/rejuvenation/battler/${shiny ? 'shiny' : 'front'}/${spriteid}.png`,
+				url: `sprites/rejuvenation/battlers/${shiny ? 'shiny' : 'front'}/${spriteid}.png`,
 				x: 10,
 				y: 5,
 			};
@@ -1238,7 +1241,7 @@ export const Dex = new class implements ModdedDex {
 		const formatid = toID(format);
 
 		if (modid === 'rejuvenation' || formatid.includes('rejuvenation')) {
-			return 'sprites/rejuvenationtypes';
+			return 'sprites/rejuvenation/types';
 		}
 
 		return '';
@@ -1253,7 +1256,7 @@ export const Dex = new class implements ModdedDex {
 
 		const sanitizedType = type === '???' ? 'unknown' : type;
 		const spriteDir = isRejuvenation
-			? 'sprites/rejuvenationtypes'
+			? 'sprites/rejuvenation/types'
 			: 'sprites/types';
 
 		const prefix = isRejuvenation ? '' : Dex.resourcePrefix;
@@ -1500,6 +1503,9 @@ export class ModdedDex {
 			return data;
 		},
 	};
+	getPokemonIcon(pokemon: string | Pokemon | ServerPokemon | Dex.PokemonSet | null, facingLeft?: boolean) {
+		return Dex.getPokemonIcon(pokemon, facingLeft, this);
+	}
 	getTypeIcon(type: string | null, b?: boolean) : string{
 		return Dex.getTypeIcon(type, b, this.modid);
 	}

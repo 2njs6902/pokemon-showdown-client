@@ -1725,7 +1725,7 @@ export function PSIcon(
 		}
 		let sanitizedType = type.replace(/\?/g, '%3f');
 		return <img
-			src={`${isRejuvenation ? '' : Dex.resourcePrefix}sprites/${isRejuvenation ? 'rejuvenationtypes' : 'types'}/${sanitizedType}.png`} alt={type}
+			src={`${isRejuvenation ? '' : Dex.resourcePrefix}sprites/${isRejuvenation ? 'rejuvenation/types' : 'types'}/${sanitizedType}.png`} alt={type}
 			height="14" width="32" class={`pixelated${props.b ? ' b' : ''}`} style="vertical-align:middle"
 		/>;
 	}
