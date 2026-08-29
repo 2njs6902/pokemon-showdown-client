@@ -49,13 +49,13 @@ function requireNoCache(pathSpec) {
  * Build search-index.js
  *********************************************************/
 
-	index = index.concat(searchableRejuvenationSpecies.map(id => id + ' pokemon'));
 {
 	process.stdout.write("Building `data/search-index.js`... ");
 
 	let index = [];
 
 	index = index.concat(Object.keys(Dex.data.Pokedex).map(x => x + ' pokemon'));
+	index = index.concat(searchableRejuvenationSpecies.map(id => id + ' pokemon'));
 	index = index.concat(Object.keys(Dex.data.Moves).map(x => x + ' move'));
 	index = index.concat(Object.keys(Dex.data.Items).map(x => x + ' item'));
 	index = index.concat(Object.keys(Dex.data.Abilities).map(x => x + ' ability'));
