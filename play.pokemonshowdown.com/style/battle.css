@@ -489,6 +489,10 @@ License: GPLv2
 	background: transparent url(../sprites/backdrops/rejuvenation/swampfield.png) no-repeat scroll left top;
 	background-size: 640px 360px;
 }
+.frozendimensionalfieldweather {
+	background: transparent url(../sprites/backdrops/rejuvenation/frozendimensionalfield.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
 
 .battle .result {
 	display: none;
