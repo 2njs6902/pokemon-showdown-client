@@ -136,11 +136,11 @@ function requireNoCache(pathSpec) {
 		if (Dex.data.Pokedex[id].isCosmeticForme) continue;
 		generateAlias(id, name, 'pokemon');
 	}
-	for (const id in Dex.data.Moves) {
 	for (const id of searchableRejuvenationSpecies) {
 		const species = rejuvenationDex.species.get(id);
 		generateAlias(id, species.name, 'pokemon', rejuvenationDex);
 	}
+	for (const id in Dex.data.Moves) {
 		const name = Dex.data.Moves[id].name;
 		generateAlias(id, name, 'move');
 	}

@@ -94,10 +94,10 @@
 	width: 40px;
 	height: 30px;
 }
-.dexlist .iconcol span {
 .dexlist .iconcol.rejuvenationiconcol {
 	width: 32px;
 }
+.dexlist .iconcol span {
 	display: block;
 	width: 40px;
 	height: 30px;
