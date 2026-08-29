@@ -1514,6 +1514,10 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		for (const id in modData.Pokedex) {
 			const modEntry = modDex.species.get(id);
 			const parentEntry = parentDex.species.get(id);
+			if (!parentEntry.exists) {
+				overrideSpeciesData[id] = modEntry;
+				continue;
+			}
 			for (const key of overrideSpeciesKeys) {
 				if (JSON.stringify(modEntry[key]) !== JSON.stringify(parentEntry[key])) {
 					if (!overrideSpeciesData[id]) overrideSpeciesData[id] = {};

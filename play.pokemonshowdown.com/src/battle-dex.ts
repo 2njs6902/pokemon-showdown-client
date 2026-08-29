@@ -1053,7 +1053,7 @@ export const Dex = new class implements ModdedDex {
 
 				return `background:transparent ` +
 					`url(sprites/rejuvenation/pokemonicons/female.png) ` +
-					`no-repeat scroll -${left}px -${top}px${fainted}`;
+					`no-repeat scroll -${left}px -${top}px${fainted};width:32px;height:32px`;
 			}
 
 			// These mons take too much space so they have their own sheets.
@@ -1065,7 +1065,7 @@ export const Dex = new class implements ModdedDex {
 			if (specificPokemon.includes(dexNumber)) {
 				return `background:transparent ` +
 					`url(sprites/rejuvenation/pokemonicons/${dexNumber}.png) ` +
-					`no-repeat scroll -${left}px 0px${fainted}`;
+					`no-repeat scroll -${left}px 0px${fainted};width:32px;height:32px`;
 			}
 
 			// National Dex number 1 occupies zero-based row 0.
@@ -1073,7 +1073,7 @@ export const Dex = new class implements ModdedDex {
 
 			return `background:transparent ` +
 				`url(sprites/rejuvenation/pokemonicons/pokemonicons-sheet.png) ` +
-				`no-repeat scroll -${left}px -${top}px${fainted}`;
+				`no-repeat scroll -${left}px -${top}px${fainted};width:32px;height:32px`;
 		}
 		
 		let num = this.getPokemonIconNum(id, pokemon?.gender === 'F', facingLeft);
@@ -1422,7 +1422,7 @@ export class ModdedDex {
 				id = toID(name);
 			}
 			const baseSpecies = Dex.species.get(originalId || name);
-			id = baseSpecies.id;
+			id = baseSpecies.exists ? baseSpecies.id : originalId;
 			if (this.cache.Species.hasOwnProperty(id)) return this.cache.Species[id];
 
 			let data = { ...baseSpecies };
