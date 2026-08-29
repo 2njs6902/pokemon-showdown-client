@@ -1052,7 +1052,7 @@ export const Dex = new class implements ModdedDex {
 				const top = femaleIndex * 32;
 
 				return `background:transparent ` +
-					`url(sprites/rejuvenation/pokemonicons/female.png) ` +
+					`url(sprites/rejuvenation/pokemonicons/female.png?v=2) ` +
 					`no-repeat scroll -${left}px -${top}px${fainted};width:32px;height:32px`;
 			}
 
@@ -1064,7 +1064,7 @@ export const Dex = new class implements ModdedDex {
 
 			if (specificPokemon.includes(dexNumber)) {
 				return `background:transparent ` +
-					`url(sprites/rejuvenation/pokemonicons/${dexNumber}.png) ` +
+					`url(sprites/rejuvenation/pokemonicons/${dexNumber}.png?v=2) ` +
 					`no-repeat scroll -${left}px 0px${fainted};width:32px;height:32px`;
 			}
 
@@ -1072,7 +1072,7 @@ export const Dex = new class implements ModdedDex {
 			const top = Math.max(0, dexNumber - 1) * 32;
 
 			return `background:transparent ` +
-				`url(sprites/rejuvenation/pokemonicons/pokemonicons-sheet.png) ` +
+				`url(sprites/rejuvenation/pokemonicons/pokemonicons-sheet.png?v=2) ` +
 				`no-repeat scroll -${left}px -${top}px${fainted};width:32px;height:32px`;
 		}
 		
@@ -1422,7 +1422,10 @@ export class ModdedDex {
 				id = toID(name);
 			}
 			const baseSpecies = Dex.species.get(originalId || name);
-			id = baseSpecies.exists ? baseSpecies.id : originalId;
+			const modTable = window.BattleTeambuilderTable[getTeambuilderTableKey(this.modid)];
+			const exactModData = modTable?.overrideSpeciesData?.[originalId];
+			const isStandaloneModSpecies = exactModData?.id === originalId;
+			id = isStandaloneModSpecies ? originalId : (baseSpecies.exists ? baseSpecies.id : originalId);
 			if (this.cache.Species.hasOwnProperty(id)) return this.cache.Species[id];
 
 			let data = { ...baseSpecies };
