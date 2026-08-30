@@ -1054,7 +1054,7 @@ export const Dex = new class implements ModdedDex {
 
 				return `background:transparent ` +
 					`url(sprites/rejuvenation/pokemonicons/female.png?v=3) ` +
-					`no-repeat scroll -${left}px -${top}px${fainted};width:40px;height:32px`;
+					`no-repeat scroll -${left}px -${top}px${fainted};width:32px;height:32px`;
 			}
 
 			// These mons take too much space so they have their own sheets.
@@ -1066,7 +1066,7 @@ export const Dex = new class implements ModdedDex {
 			if (specificPokemon.includes(dexNumber)) {
 				return `background:transparent ` +
 					`url(sprites/rejuvenation/pokemonicons/${dexNumber}.png?v=3) ` +
-					`no-repeat scroll -${left}px 0px${fainted};width:40px;height:32px`;
+					`no-repeat scroll -${left}px 0px${fainted};width:32px;height:32px`;
 			}
 
 			// National Dex number 1 occupies zero-based row 0.
@@ -1074,7 +1074,7 @@ export const Dex = new class implements ModdedDex {
 
 			return `background:transparent ` +
 				`url(sprites/rejuvenation/pokemonicons/pokemonicons-sheet.png?v=3) ` +
-				`no-repeat scroll -${left}px -${top}px${fainted};width:40px;height:32px`;
+				`no-repeat scroll -${left}px -${top}px${fainted};width:32px;height:32px`;
 		}
 		
 		let num = this.getPokemonIconNum(id, pokemon?.gender === 'F', facingLeft);

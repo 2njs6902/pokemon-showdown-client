@@ -95,7 +95,12 @@
 	height: 30px;
 }
 .dexlist .iconcol.rejuvenationiconcol {
+	width: 40px;
+}
+.dexlist .iconcol.rejuvenationiconcol span {
 	width: 32px;
+	height: 32px;
+	overflow: hidden;
 }
 .dexlist .iconcol span {
 	display: block;
