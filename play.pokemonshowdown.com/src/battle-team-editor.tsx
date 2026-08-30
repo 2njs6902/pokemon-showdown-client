@@ -1900,7 +1900,7 @@ class TeamTextbox extends preact.Component<{
 
 						if (editor.narrow) {
 							return <div style={`top:${prevOffset + 1}px;left:5px;position:absolute;text-align:center;pointer-events:none`}>
-								<div><PSIcon pokemon={species.id} /></div>
+								<div><PSIcon pokemon={species.id} modid={editor.dex.modid} /></div>
 								{species.types.map(type => <div><PSIcon type={type} /></div>)}
 								<div><PSIcon item={set.item || null} /></div>
 							</div>;
@@ -2227,7 +2227,7 @@ class TeamEditorForm extends preact.Component<{
 						class={`button picontab${cur(i)}`} onClick={this.setFocus}
 						value={`set-${i}-${type}`}
 					>
-						<PSIcon pokemon={curSet} /><br />
+						<PSIcon pokemon={curSet} modid={editor.dex.modid} /><br />
 						{editor.getNickname(curSet)}
 					</button></li>)}
 					{editor.canAdd() && <li><button
@@ -4073,7 +4073,7 @@ class DetailsForm extends preact.Component<{
 									value={id} class={`button piconbtn${isCur ? ' cur' : ''}`}
 									style={{ padding: '2px' }} onClick={this.selectSprite}
 								>
-									<PSIcon pokemon={{ species: sp.name } as Dex.PokemonSet} />
+									<PSIcon pokemon={{ species: sp.name } as Dex.PokemonSet} modid={editor.dex.modid} />
 									<br />{sp.forme || sp.baseForme || sp.baseSpecies}
 								</button>;
 							});

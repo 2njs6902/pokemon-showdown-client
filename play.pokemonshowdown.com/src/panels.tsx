@@ -1706,12 +1706,13 @@ export class ReconnectTimer extends preact.Component {
 }
 
 export function PSIcon(
-	props: { pokemon: string | Pokemon | ServerPokemon | Dex.PokemonSet | null } |
+	props: { pokemon: string | Pokemon | ServerPokemon | Dex.PokemonSet | null, modid?: ID } |
 		{ item: string | null } | { type: string, b?: boolean, new?: boolean, tera?: boolean, modid?: ID } |
 		{ category: string } | { gender: string }
 ) {
 	if ('pokemon' in props) {
-		return <span class="picon" style={Dex.getPokemonIcon(props.pokemon)} />;
+		const dex = props.modid ? Dex.mod(props.modid) : Dex;
+		return <span class="picon" style={dex.getPokemonIcon(props.pokemon)} />;
 	}
 	if ('item' in props) {
 		return <span class="itemicon" style={Dex.getItemIcon(props.item)} />;

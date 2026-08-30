@@ -755,7 +755,8 @@ export const Dex = new class implements ModdedDex {
 			}
 			pokemon = pokemon.getSpeciesForme() + (isGigantamax ? '-Gmax' : '');
 		}
-		const species = Dex.species.get(pokemon);
+		const spriteDex = options.mod?.includes('rejuvenation') ? Dex.mod('gen9rejuvenation' as ID) : Dex;
+		const species = spriteDex.species.get(pokemon);
 		const mod = options.mod || '';
 		// Gmax sprites are already extremely large, so we don't need to double.
 		if (species.name.endsWith('-Gmax')) isDynamax = false;
@@ -1052,7 +1053,7 @@ export const Dex = new class implements ModdedDex {
 				const top = femaleIndex * 32;
 
 				return `background:transparent ` +
-					`url(sprites/rejuvenation/pokemonicons/female.png?v=2) ` +
+					`url(sprites/rejuvenation/pokemonicons/female.png?v=3) ` +
 					`no-repeat scroll -${left}px -${top}px${fainted};width:32px;height:32px`;
 			}
 
@@ -1064,7 +1065,7 @@ export const Dex = new class implements ModdedDex {
 
 			if (specificPokemon.includes(dexNumber)) {
 				return `background:transparent ` +
-					`url(sprites/rejuvenation/pokemonicons/${dexNumber}.png?v=2) ` +
+					`url(sprites/rejuvenation/pokemonicons/${dexNumber}.png?v=3) ` +
 					`no-repeat scroll -${left}px 0px${fainted};width:32px;height:32px`;
 			}
 
@@ -1072,7 +1073,7 @@ export const Dex = new class implements ModdedDex {
 			const top = Math.max(0, dexNumber - 1) * 32;
 
 			return `background:transparent ` +
-				`url(sprites/rejuvenation/pokemonicons/pokemonicons-sheet.png?v=2) ` +
+				`url(sprites/rejuvenation/pokemonicons/pokemonicons-sheet.png?v=3) ` +
 				`no-repeat scroll -${left}px -${top}px${fainted};width:32px;height:32px`;
 		}
 		
@@ -1087,7 +1088,7 @@ export const Dex = new class implements ModdedDex {
 	getTeambuilderSpriteData(pokemon: any, dex: ModdedDex = Dex): TeambuilderSpriteData {
 		let gen = dex.gen;
 		let id = toID(pokemon.species || pokemon);
-		let species = Dex.species.get(id);
+		let species = dex.species.get(id);
 		let spriteid: string;
 		if (typeof pokemon === 'string') {
 			spriteid = species.spriteid || id;
