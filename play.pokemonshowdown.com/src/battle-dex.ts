@@ -756,7 +756,7 @@ export const Dex = new class implements ModdedDex {
 			pokemon = pokemon.getSpeciesForme() + (isGigantamax ? '-Gmax' : '');
 		}
 		const spriteDex = options.mod?.includes('rejuvenation') ? Dex.mod('gen9rejuvenation' as ID) : Dex;
-		const species = spriteDex.species.get(pokemon);
+		const species = spriteDex.species.get(typeof pokemon === 'string' ? pokemon : pokemon.name);
 		const mod = options.mod || '';
 		// Gmax sprites are already extremely large, so we don't need to double.
 		if (species.name.endsWith('-Gmax')) isDynamax = false;

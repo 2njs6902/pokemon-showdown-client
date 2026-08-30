@@ -156,11 +156,12 @@ export function TeamBox(props: {
 	const team = props.team;
 	let contents;
 	if (team) {
+		const iconDex = Dex.forFormat(team.format);
 		team.iconCache ||= team.packedTeam ? (
 			Teams.unpackSpeciesOnly(team.packedTeam).map(
 				// can't use <PSIcon>, weird interaction with iconCache
 				// don't try this at home; I'm a trained professional
-				pokemon => PSIcon({ pokemon })
+				pokemon => PSIcon({ pokemon, modid: iconDex.modid })
 			)
 		) : (
 			<em>(empty {team.isBox ? 'box' : 'team'})</em>

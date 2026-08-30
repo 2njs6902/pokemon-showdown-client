@@ -1389,7 +1389,12 @@ class BattleAbilitySearch extends BattleTypedSearch<'ability'> {
 	}
 	getDefaultResults(reverseSort?: boolean): SearchRow[] {
 		const results: SearchRow[] = [];
-		for (let id in BattleAbilities) {
+		const abilityIDs = new Set(Object.keys(BattleAbilities));
+		if (this.format.includes('rejuvenation')) {
+			const modAbilities = window.BattleTeambuilderTable?.rejuvenation?.overrideAbilityData || {};
+			for (const id in modAbilities) abilityIDs.add(id);
+		}
+		for (const id of abilityIDs) {
 			results.push(['ability', id as ID]);
 		}
 		if (reverseSort) results.reverse();

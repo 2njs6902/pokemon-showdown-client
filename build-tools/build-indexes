@@ -44,6 +44,9 @@ function requireNoCache(pathSpec) {
 	const searchableRejuvenationSpecies = [...rejuvenationOnlySpecies].filter(id => (
 		!rejuvenationDex.species.get(id).isCosmeticForme
 	));
+	const rejuvenationOnlyAbilities = new Set(
+		Object.keys(rejuvenationDex.data.Abilities).filter(id => !(id in Dex.data.Abilities))
+	);
 
 /*********************************************************
  * Build search-index.js
@@ -59,6 +62,7 @@ function requireNoCache(pathSpec) {
 	index = index.concat(Object.keys(Dex.data.Moves).map(x => x + ' move'));
 	index = index.concat(Object.keys(Dex.data.Items).map(x => x + ' item'));
 	index = index.concat(Object.keys(Dex.data.Abilities).map(x => x + ' ability'));
+	index = index.concat([...rejuvenationOnlyAbilities].map(x => x + ' ability'));
 	index = index.concat(Object.keys(Dex.data.TypeChart).map(x => toID(x) + ' type'));
 	index = index.concat(['physical', 'special', 'status'].map(x => toID(x) + ' category'));
 	index = index.concat([
@@ -152,6 +156,10 @@ function requireNoCache(pathSpec) {
 		const name = Dex.data.Abilities[id].name;
 		generateAlias(id, name, 'ability');
 	}
+	for (const id of rejuvenationOnlyAbilities) {
+		const ability = rejuvenationDex.abilities.get(id);
+		generateAlias(id, ability.name, 'ability');
+	}
 
 	// hardcode ultra beasts
 	const ultraBeasts = {
@@ -214,7 +222,8 @@ function requireNoCache(pathSpec) {
 			break;
 		case 'move': name = Dex.moves.get(id).name; break;
 		case 'item': name = Dex.items.get(id).name; break;
-		case 'ability': name = Dex.abilities.get(id).name; break;
+		case 'ability': name = rejuvenationOnlyAbilities.has(id) ?
+			rejuvenationDex.abilities.get(id).name : Dex.abilities.get(id).name; break;
 		case 'article': name = BattleArticleTitles[id] || ''; break;
 		}
 		let res = '';
@@ -1562,6 +1571,10 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		for (const id in modData.Abilities) {
 			const modEntry = modDex.abilities.get(id);
 			const parentEntry = parentDex.abilities.get(id);
+			if (!parentEntry.exists) {
+				overrideAbilityData[id] = modEntry;
+				continue;
+			}
 			for (const key of overrideAbilityKeys) {
 				if (JSON.stringify(modEntry[key]) !== JSON.stringify(parentEntry[key])) {
 					if (!overrideAbilityData[id]) overrideAbilityData[id] = {};
