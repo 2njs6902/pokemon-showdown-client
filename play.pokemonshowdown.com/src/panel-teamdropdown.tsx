@@ -162,7 +162,10 @@ export function TeamBox(props: {
 				// can't use <PSIcon>, weird interaction with iconCache
 				// don't try this at home; I'm a trained professional
 				pokemon => iconDex.modid.includes('rejuvenation') ? (
-					<span class="rejuvenation-picon-slot">
+					<span
+						class="rejuvenation-picon-slot"
+						style="display:inline-block;width:40px;height:32px;overflow:hidden;vertical-align:middle"
+					>
 						{PSIcon({ pokemon, modid: iconDex.modid })}
 					</span>
 				) : PSIcon({ pokemon, modid: iconDex.modid })
