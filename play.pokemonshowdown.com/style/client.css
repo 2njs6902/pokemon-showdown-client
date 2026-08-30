@@ -553,18 +553,6 @@ p.or:after {
 .teamselect small .picon {
 	margin: 0 -3px;
 }
-.teamselect small .rejuvenation-picon-slot {
-	display: inline-block;
-	width: 40px;
-	height: 32px;
-	overflow: hidden;
-	vertical-align: middle;
-}
-.teamselect small .rejuvenation-picon-slot .picon {
-	width: 32px;
-	height: 32px;
-	margin: 0;
-}
 .select:hover, .team.team-hover {
 	border-color: #555555;
 	background: #FFFFFF;
