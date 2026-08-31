@@ -3206,6 +3206,9 @@ export class Battle {
 			}
 			if (kwArgs.persistent) minTimeLeft += 2;
 			this.addPseudoWeather(effect.name, minTimeLeft, maxTimeLeft);
+			if (effect.id.endsWith('field')) {
+				(this.scene as BattleScene).updateField(effect.id);
+			}
 
 			switch (effect.id) {
 			case 'gravity':
@@ -3222,6 +3225,9 @@ export class Battle {
 			let effect = Dex.getEffect(args[1]);
 			// let poke = this.getPokemon(kwArgs.of);
 			this.removePseudoWeather(effect.name);
+			if (effect.id.endsWith('field')) {
+				(this.scene as BattleScene).updateField('');
+			}
 			this.log(args, kwArgs);
 			break;
 		}

@@ -464,6 +464,22 @@ License: GPLv2
 	background: #CCAAEE url(../fx/weather-psychicterrain.png) no-repeat scroll left top;
 	color: #441155;
 }
+.rejuvenationterrain.mistyterrainweather {
+	background: transparent url(../sprites/rejuvenation/backdrops/mistyterrain.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
+.rejuvenationterrain.electricterrainweather {
+	background: transparent url(../sprites/rejuvenation/backdrops/electricterrain.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
+.rejuvenationterrain.grassyterrainweather {
+	background: transparent url(../sprites/rejuvenation/backdrops/grassyterrain.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
+.rejuvenationterrain.psychicterrainweather {
+	background: transparent url(../sprites/rejuvenation/backdrops/psychicterrain.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
 .gravityweather {
 	background: #DDAAEE url(../fx/weather-gravity.png) no-repeat scroll left top;
 	color: #661155;
@@ -482,15 +498,27 @@ License: GPLv2
 }
 
 .forestfieldweather {
-	background: transparent url(../sprites/backdrops/rejuvenation/forestfield.png) no-repeat scroll left top;
+	background: transparent url(../sprites/rejuvenation/backdrops/forestfield.png) no-repeat scroll left top;
 	background-size: 640px 360px;
 }
 .swampfieldweather {
-	background: transparent url(../sprites/backdrops/rejuvenation/swampfield.png) no-repeat scroll left top;
+	background: transparent url(../sprites/rejuvenation/backdrops/swampfield.png) no-repeat scroll left top;
 	background-size: 640px 360px;
 }
 .frozendimensionalfieldweather {
-	background: transparent url(../sprites/backdrops/rejuvenation/frozendimensionalfield.png) no-repeat scroll left top;
+	background: transparent url(../sprites/rejuvenation/backdrops/frozendimensionalfield.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
+.corrosivefieldweather {
+	background: transparent url(../sprites/rejuvenation/backdrops/corrosivefield.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
+.corrosivemistfieldweather {
+	background: transparent url(../sprites/rejuvenation/backdrops/corrosivemistfield.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
+.underwaterfieldweather {
+	background: transparent url(../sprites/rejuvenation/backdrops/underwaterfield.png) no-repeat scroll left top;
 	background-size: 640px 360px;
 }
 

@@ -608,8 +608,8 @@ export class BattleScene implements BattleSceneStub {
 		} else {
 			const formatName = toID(this.battle.tier);
 
-			if (this.battle.id.includes('rejuvenation')) {
-				bg = `sprites/backdrops/rejuvenation/${BattleBackdropsRejuvenation[this.numericId % BattleBackdropsRejuvenation.length]}`;
+			if (this.mod === 'rejuvenation' || this.battle.tier.includes('Rejuvenation') || this.battle.id.includes('rejuvenation')) {
+				bg = `sprites/rejuvenation/backdrops/${BattleBackdropsRejuvenation[this.numericId % BattleBackdropsRejuvenation.length]}`;
 			} else if (gen <= 1) {
 				bg = 'fx/bg-gen1.png?';
 			} else if (gen <= 2) {
@@ -1051,8 +1051,14 @@ export class BattleScene implements BattleSceneStub {
 		}
 		let terrain = '' as ID;
 		for (const pseudoWeatherData of this.battle.pseudoWeather) {
-			terrain = toID(pseudoWeatherData[0]);
+			const pseudoWeather = toID(pseudoWeatherData[0]);
+			if (pseudoWeather.endsWith('terrain')) terrain = pseudoWeather;
 		}
+		const terrainClass = (terrainId: ID) => {
+			if (!terrainId || this.curField) return 'weather';
+			const rejuvenation = this.mod === 'rejuvenation' ? ' rejuvenationterrain' : '';
+			return `weather ${terrainId}weather${rejuvenation}`;
+		};
 		if (weather === 'desolateland' || weather === 'primordialsea' || weather === 'deltastream') {
 			isIntense = true;
 		}
@@ -1066,7 +1072,8 @@ export class BattleScene implements BattleSceneStub {
 		if (instant) {
 			this.$weather.html('<em>' + weatherhtml + '</em>');
 			if (this.curWeather === weather && this.curTerrain === terrain) return;
-			this.$terrain.attr('class', terrain ? 'weather ' + terrain + 'weather' : 'weather');
+			this.$terrain.attr('class', terrainClass(terrain));
+			this.$terrain.css('opacity', this.curField ? 0 : 1);
 			this.curTerrain = terrain;
 			this.$weather.attr('class', weather ? 'weather ' + weather + 'weather' : 'weather');
 			this.$weather.css('opacity', isIntense || !weather ? 0.9 : 0.5);
@@ -1092,14 +1099,18 @@ export class BattleScene implements BattleSceneStub {
 				top: 360,
 				opacity: 0,
 			}, this.curTerrain ? 400 : 1, () => {
-				this.$terrain.attr('class', terrain ? 'weather ' + terrain + 'weather' : 'weather');
-				this.$terrain.animate({ top: 0, opacity: 1 }, 400);
+				this.$terrain.attr('class', terrainClass(terrain));
+				this.$terrain.animate({ top: 0, opacity: this.curField ? 0 : 1 }, 400);
 			});
 			this.curTerrain = terrain;
 		}
 	}
 	updateField(field: string) {
 		if (field === this.curField) return;
+		this.$terrain.stop(true, true);
+		if (field) {
+			this.$terrain.attr('class', 'weather').css({ top: 0, opacity: 0 });
+		}
 
 		this.$field.animate({
 			top: 360,
@@ -1107,6 +1118,12 @@ export class BattleScene implements BattleSceneStub {
 		}, this.curField ? 400 : 1, () => {
 			this.$field.attr('class', field ? 'weather ' + field + 'weather' : 'weather');
 			this.$field.animate({ top: 0, opacity: 1 }, 400);
+			if (!field) {
+				const rejuvenation = this.mod === 'rejuvenation' ? ' rejuvenationterrain' : '';
+				this.$terrain
+					.attr('class', this.curTerrain ? `weather ${this.curTerrain}weather${rejuvenation}` : 'weather')
+					.css({ top: 0, opacity: this.curTerrain ? 1 : 0 });
+			}
 		});
 
 		this.curField = field;
