@@ -47,6 +47,12 @@ function requireNoCache(pathSpec) {
 	const rejuvenationOnlyAbilities = new Set(
 		Object.keys(rejuvenationDex.data.Abilities).filter(id => !(id in Dex.data.Abilities))
 	);
+	const rejuvenationOnlyMoves = new Set(
+		Object.keys(rejuvenationDex.data.Moves).filter(id => !(id in Dex.data.Moves))
+	);
+	const rejuvenationOnlyItems = new Set(
+		Object.keys(rejuvenationDex.data.Items).filter(id => !(id in Dex.data.Items))
+	);
 
 /*********************************************************
  * Build search-index.js
@@ -60,7 +66,9 @@ function requireNoCache(pathSpec) {
 	index = index.concat(Object.keys(Dex.data.Pokedex).map(x => x + ' pokemon'));
 	index = index.concat(searchableRejuvenationSpecies.map(id => id + ' pokemon'));
 	index = index.concat(Object.keys(Dex.data.Moves).map(x => x + ' move'));
+	index = index.concat([...rejuvenationOnlyMoves].map(x => x + ' move'));
 	index = index.concat(Object.keys(Dex.data.Items).map(x => x + ' item'));
+	index = index.concat([...rejuvenationOnlyItems].map(x => x + ' item'));
 	index = index.concat(Object.keys(Dex.data.Abilities).map(x => x + ' ability'));
 	index = index.concat([...rejuvenationOnlyAbilities].map(x => x + ' ability'));
 	index = index.concat(Object.keys(Dex.data.TypeChart).map(x => toID(x) + ' type'));
@@ -148,9 +156,17 @@ function requireNoCache(pathSpec) {
 		const name = Dex.data.Moves[id].name;
 		generateAlias(id, name, 'move');
 	}
+	for (const id of rejuvenationOnlyMoves) {
+		const move = rejuvenationDex.moves.get(id);
+		generateAlias(id, move.name, 'move');
+	}
 	for (const id in Dex.data.Items) {
 		const name = Dex.data.Items[id].name;
 		generateAlias(id, name, 'item');
+	}
+	for (const id of rejuvenationOnlyItems) {
+		const item = rejuvenationDex.items.get(id);
+		generateAlias(id, item.name, 'item');
 	}
 	for (const id in Dex.data.Abilities) {
 		const name = Dex.data.Abilities[id].name;
@@ -220,8 +236,10 @@ function requireNoCache(pathSpec) {
 			name = rejuvenationOnlySpecies.has(id) ?
 				rejuvenationDex.species.get(id).name : Dex.species.get(id).name;
 			break;
-		case 'move': name = Dex.moves.get(id).name; break;
-		case 'item': name = Dex.items.get(id).name; break;
+		case 'move': name = rejuvenationOnlyMoves.has(id) ?
+			rejuvenationDex.moves.get(id).name : Dex.moves.get(id).name; break;
+		case 'item': name = rejuvenationOnlyItems.has(id) ?
+			rejuvenationDex.items.get(id).name : Dex.items.get(id).name; break;
 		case 'ability': name = rejuvenationOnlyAbilities.has(id) ?
 			rejuvenationDex.abilities.get(id).name : Dex.abilities.get(id).name; break;
 		case 'article': name = BattleArticleTitles[id] || ''; break;
@@ -241,8 +259,10 @@ function requireNoCache(pathSpec) {
 
 	const BattleSearchCountIndex = {};
 	for (const type in Dex.data.TypeChart) {
-		BattleSearchCountIndex[type + ' move'] = Object.keys(Dex.data.Moves)
-			.filter(id => (Dex.data.Moves[id].type === type)).length;
+		BattleSearchCountIndex[type + ' move'] = [
+			...Object.keys(Dex.data.Moves).map(id => Dex.moves.get(id)),
+			...[...rejuvenationOnlyMoves].map(id => rejuvenationDex.moves.get(id)),
+		].filter(move => move.type === type).length;
 	}
 
 	for (const type in Dex.data.TypeChart) {
