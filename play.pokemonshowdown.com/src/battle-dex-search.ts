@@ -546,6 +546,20 @@ export class DexSearch {
 		}
 
 		this.results = Array.prototype.concat.apply(topbuf, bufs);
+		if (searchType === 'item' && this.dex.modid.includes('rejuvenation')) {
+			const table = window.BattleTeambuilderTable.rejuvenation as any;
+			const itemRows = table.itemSet || table.items || [];
+			const matches: SearchRow[] = [];
+			for (const row of itemRows) {
+				if (!Array.isArray(row) || row[0] !== 'item') continue;
+				const id = toID(row[1]);
+				const item = this.dex.items.get(id);
+				if (!id.startsWith(query) && !toID(item.name).startsWith(query)) continue;
+				if (this.results.some(result => result[0] === 'item' && result[1] === id)) continue;
+				matches.push(['item', id]);
+			}
+			if (matches.length) this.results = [...matches, ...this.results];
+		}
 		return this.results;
 	}
 	private instafilter(searchType: SearchType | '', fType: SearchType, fId: ID): SearchRow[] {

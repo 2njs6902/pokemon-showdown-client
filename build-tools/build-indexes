@@ -1588,6 +1588,10 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		for (const id in modData.Items) {
 			const modEntry = modDex.items.get(id);
 			const parentEntry = parentDex.items.get(id);
+			if (!parentEntry.exists) {
+				overrideItemData[id] = modEntry;
+				continue;
+			}
 			for (const key of overrideItemKeys) {
 				if (JSON.stringify(modEntry[key]) !== JSON.stringify(parentEntry[key])) {
 					if (!overrideItemData[id]) overrideItemData[id] = {};
