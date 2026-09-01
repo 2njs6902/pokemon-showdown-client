@@ -1433,6 +1433,13 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 	];
 	const overrideAbilityKeys = ['desc', 'flags', 'isNonstandard', 'rating', 'shortDesc'];
 	const overrideItemKeys = ['desc', 'fling', 'isNonstandard', 'naturalGift', 'shortDesc'];
+	const withText = (dex, effect) => {
+		const entry = { ...effect };
+		const text = dex.text.get(effect);
+		if (text.desc) entry.desc = text.desc;
+		if (text.shortDesc) entry.shortDesc = text.shortDesc;
+		return entry;
+	};
 
 	//
 	// Past gen table
@@ -1555,8 +1562,14 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		const overrideMoveData = {};
 		BattleTeambuilderTable[mod].overrideMoveData = overrideMoveData;
 		for (const id in modData.Moves) {
-			const modEntry = modDex.moves.get(id);
-			const parentEntry = parentDex.moves.get(id);
+			const modMove = modDex.moves.get(id);
+			const parentMove = parentDex.moves.get(id);
+			const modEntry = withText(modDex, modMove);
+			const parentEntry = withText(parentDex, parentMove);
+			if (!parentMove.exists) {
+				overrideMoveData[id] = modEntry;
+				continue;
+			}
 			for (const key of overrideMoveKeys) {
 				if (key === 'category' && modDex.gen <= 3) continue;
 				if (JSON.stringify(modEntry[key]) !== JSON.stringify(parentEntry[key])) {
@@ -1569,9 +1582,11 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		const overrideAbilityData = {};
 		BattleTeambuilderTable[mod].overrideAbilityData = overrideAbilityData;
 		for (const id in modData.Abilities) {
-			const modEntry = modDex.abilities.get(id);
-			const parentEntry = parentDex.abilities.get(id);
-			if (!parentEntry.exists) {
+			const modAbility = modDex.abilities.get(id);
+			const parentAbility = parentDex.abilities.get(id);
+			const modEntry = withText(modDex, modAbility);
+			const parentEntry = withText(parentDex, parentAbility);
+			if (!parentAbility.exists) {
 				overrideAbilityData[id] = modEntry;
 				continue;
 			}
@@ -1586,9 +1601,11 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		const overrideItemData = {};
 		BattleTeambuilderTable[mod].overrideItemData = overrideItemData;
 		for (const id in modData.Items) {
-			const modEntry = modDex.items.get(id);
-			const parentEntry = parentDex.items.get(id);
-			if (!parentEntry.exists) {
+			const modItem = modDex.items.get(id);
+			const parentItem = parentDex.items.get(id);
+			const modEntry = withText(modDex, modItem);
+			const parentEntry = withText(parentDex, parentItem);
+			if (!parentItem.exists) {
 				overrideItemData[id] = modEntry;
 				continue;
 			}
