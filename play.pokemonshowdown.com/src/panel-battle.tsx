@@ -676,7 +676,7 @@ class BattlePanel extends PSRoomPanel<BattleRoom> {
 			aria-disabled={props.disabled}
 			style={props.disabled === 'fade' ? 'opacity: 0.5' : ''} data-tooltip={props.tooltip}
 		>
-			{PSIcon({ pokemon })}
+			{PSIcon({ pokemon, modid: this.props.room.battle.dex.modid })}
 			{pokemon.name}
 			{
 				!props.noHPBar && !pokemon.fainted &&
