@@ -550,12 +550,17 @@ export class DexSearch {
 			const table = window.BattleTeambuilderTable.rejuvenation as any;
 			const itemRows = table.itemSet || table.items || [];
 			const matches: SearchRow[] = [];
-			for (const row of itemRows) {
+			const existingItems: { [id: string]: 1 } = {};
+			for (const result of this.results) {
+				if (result[0] === 'item') existingItems[result[1]] = 1;
+			}
+			for (let rowIndex = 0; rowIndex < itemRows.length; rowIndex++) {
+				const row = itemRows[rowIndex];
 				if (!Array.isArray(row) || row[0] !== 'item') continue;
 				const id = toID(row[1]);
 				const item = this.dex.items.get(id);
 				if (!id.startsWith(query) && !toID(item.name).startsWith(query)) continue;
-				if (this.results.some(result => result[0] === 'item' && result[1] === id)) continue;
+				if (existingItems[id]) continue;
 				matches.push(['item', id]);
 			}
 			if (matches.length) this.results = [...matches, ...this.results];
