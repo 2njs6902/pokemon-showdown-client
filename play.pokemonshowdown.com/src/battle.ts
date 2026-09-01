@@ -1532,7 +1532,7 @@ export class Battle {
 	}
 	updateTurnCounters() {
 		for (const pWeather of this.pseudoWeather) {
-			if (pWeather[1]) pWeather[1]--;
+			if (pWeather[1] > 0) pWeather[1]--;
 			if (pWeather[2]) pWeather[2]--;
 		}
 		for (const side of this.sides) {
@@ -3194,6 +3194,10 @@ export class Battle {
 			this.activateAbility(poke, fromeffect);
 			let minTimeLeft = 5;
 			let maxTimeLeft = 0;
+			if (kwArgs.duration !== undefined) {
+				const duration = Number(kwArgs.duration);
+				if (Number.isFinite(duration)) minTimeLeft = duration > 0 ? duration : -1;
+			}
 			if (effect.id.endsWith('terrain')) {
 				for (let i = this.pseudoWeather.length - 1; i >= 0; i--) {
 					let pwID = toID(this.pseudoWeather[i][0]);

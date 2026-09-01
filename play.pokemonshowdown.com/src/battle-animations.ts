@@ -967,6 +967,9 @@ export class BattleScene implements BattleSceneStub {
 
 	pseudoWeatherLeft(pWeather: WeatherState) {
 		let buf = `<br />${Dex.moves.get(pWeather[0]).name}`;
+		if (pWeather[1] < 0) {
+			return `${buf} <small>(Permanent)</small>`;
+		}
 		if (!pWeather[1] && pWeather[2]) {
 			pWeather[1] = pWeather[2];
 			pWeather[2] = 0;
