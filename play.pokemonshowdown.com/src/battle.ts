@@ -3194,9 +3194,13 @@ export class Battle {
 			this.activateAbility(poke, fromeffect);
 			let minTimeLeft = 5;
 			let maxTimeLeft = 0;
+			let hasExactDuration = false;
 			if (kwArgs.duration !== undefined) {
 				const duration = Number(kwArgs.duration);
-				if (Number.isFinite(duration)) minTimeLeft = duration > 0 ? duration : -1;
+				if (Number.isFinite(duration)) {
+					minTimeLeft = duration > 0 ? duration : -1;
+					hasExactDuration = true;
+				}
 			}
 			if (effect.id.endsWith('terrain')) {
 				for (let i = this.pseudoWeather.length - 1; i >= 0; i--) {
@@ -3206,9 +3210,9 @@ export class Battle {
 						continue;
 					}
 				}
-				if (this.gen > 6) maxTimeLeft = 8;
+				if (!hasExactDuration && this.gen > 6) maxTimeLeft = 8;
 			}
-			if (kwArgs.persistent) minTimeLeft += 2;
+			if (kwArgs.persistent && !hasExactDuration) minTimeLeft += 2;
 			this.addPseudoWeather(effect.name, minTimeLeft, maxTimeLeft);
 			if (effect.id.endsWith('field')) {
 				(this.scene as BattleScene).updateField(effect.id);

@@ -3940,6 +3940,11 @@ class DetailsForm extends preact.Component<{
 		} else {
 			delete set.hpType;
 		}
+		for (let i = 0; i < set.moves.length; i++) {
+			if (toID(set.moves[i]).startsWith('hiddenpower')) {
+				set.moves[i] = target.value ? `Hidden Power ${target.value}` : 'Hidden Power';
+			}
+		}
 		this.props.onChange();
 	};
 	renderGender(gender: Dex.GenderName) {
