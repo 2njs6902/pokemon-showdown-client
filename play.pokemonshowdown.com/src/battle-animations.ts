@@ -1053,10 +1053,13 @@ export class BattleScene implements BattleSceneStub {
 			weather = '' as ID;
 		}
 		let terrain = '' as ID;
+		let mudSport = false;
 		for (const pseudoWeatherData of this.battle.pseudoWeather) {
 			const pseudoWeather = toID(pseudoWeatherData[0]);
 			if (pseudoWeather.endsWith('terrain')) terrain = pseudoWeather;
+			if (pseudoWeather === 'mudsport') mudSport = true;
 		}
+		if (mudSport && terrain === 'electricterrain') terrain = '' as ID;
 		const terrainClass = (terrainId: ID) => {
 			if (!terrainId || this.curField) return 'weather';
 			const rejuvenation = this.mod === 'rejuvenation' ? ' rejuvenationterrain' : '';
@@ -1481,8 +1484,9 @@ export class BattleScene implements BattleSceneStub {
 	}
 
 	typeAnim(pokemon: Pokemon, types: string) {
+		const modid = this.battle.tier.includes('Rejuvenation') ? 'gen9rejuvenation' as ID : undefined;
 		const result = BattleLog.escapeHTML(types).split('/').map(type =>
-			`<img src="${Dex.resourcePrefix}sprites/types/${encodeURIComponent(type)}.png" alt="${type}" class="pixelated" />`
+			Dex.getTypeIcon(type, false, modid)
 		).join(' ');
 		this.resultAnim(pokemon, result, 'neutral');
 	}

@@ -921,11 +921,11 @@ export class BattleTooltips {
 			} else if (clientPokemon?.volatiles.typechange || clientPokemon?.volatiles.typeadd) {
 				text += `<small>(Type changed)</small><br />`;
 			}
-			text += `<span class="textaligned-typeicons">${types.map(type => this.battle.dex.getTypeIcon(type)).join(' ')}</span>`;
+			text += `<span class="textaligned-typeicons">${types.map(type => this.getTypeIcon(type)).join(' ')}</span>`;
 			if (pokemon.terastallized) {
-				text += `&nbsp; &nbsp; <small>(base: <span class="textaligned-typeicons">${this.getPokemonTypes(pokemon, true).map(type => this.battle.dex.getTypeIcon(type)).join(' ')}</span>)</small>`;
-			} else if (knownPokemon.teraType) {
-				text += `&nbsp; &nbsp; <small>(Tera Type: <span class="textaligned-typeicons">${this.battle.dex.getTypeIcon(knownPokemon.teraType)}</span>)</small>`;
+				text += `&nbsp; &nbsp; <small>(base: <span class="textaligned-typeicons">${this.getPokemonTypes(pokemon, true).map(type => this.getTypeIcon(type)).join(' ')}</span>)</small>`;
+			} else if (knownPokemon.teraType && !this.battle.tier.includes('Rejuvenation')) {
+				text += `&nbsp; &nbsp; <small>(Tera Type: <span class="textaligned-typeicons">${this.getTypeIcon(knownPokemon.teraType)}</span>)</small>`;
 			}
 			text += `</h2>`;
 		}

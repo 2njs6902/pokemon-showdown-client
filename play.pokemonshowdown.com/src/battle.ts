@@ -3202,6 +3202,12 @@ export class Battle {
 					hasExactDuration = true;
 				}
 			}
+			if (kwArgs.durationmax !== undefined) {
+				const durationMax = Number(kwArgs.durationmax);
+				if (Number.isFinite(durationMax) && durationMax > minTimeLeft) {
+					maxTimeLeft = durationMax;
+				}
+			}
 			if (effect.id.endsWith('terrain')) {
 				for (let i = this.pseudoWeather.length - 1; i >= 0; i--) {
 					let pwID = toID(this.pseudoWeather[i][0]);
