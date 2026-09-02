@@ -116,7 +116,12 @@ export const BattleSound = new class {
 		if (this.soundCache[url]) return this.soundCache[url];
 		try {
 			const sound = document.createElement('audio');
-			sound.src = `https://${Config.routes.client}/${url}`;
+			if (/^https?:\/\//.test(url)) {
+				sound.src = url;
+			} else {
+				const host = url.startsWith('sprites/rejuvenation/') ? Config.routes.client : 'play.pokemonshowdown.com';
+				sound.src = `https://${host}/${url}`;
+			}
 			sound.volume = this.effectVolume / 100;
 			this.soundCache[url] = sound;
 			return sound;

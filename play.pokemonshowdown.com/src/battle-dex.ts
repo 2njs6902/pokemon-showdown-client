@@ -289,10 +289,7 @@ export const Dex = new class implements ModdedDex {
 	})();
 
 	fxPrefix = (() => {
-		const protocol = (window.document?.location?.protocol !== 'http:') ? 'https:' : '';
-		const clientHost = window.Config?.routes?.client ||
-			(window.document?.location?.protocol === 'file:' ? 'pcr-showdown.com' : 'play.pokemonshowdown.com');
-		return `${protocol}//${clientHost}/fx/`;
+		return 'https://play.pokemonshowdown.com/fx/';
 	})();
 
 	loadedSpriteData = { xy: 1, bw: 0 };
