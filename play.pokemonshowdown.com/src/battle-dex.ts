@@ -284,12 +284,15 @@ export const Dex = new class implements ModdedDex {
 
 	resourcePrefix = (() => {
 		if (window.Config?.routes?.client) return `//${Config.routes.client}/`;
+		if (window.location.protocol === 'file:') return 'https://pcr-showdown.com/';
 		return `${window.location.origin}/`;
 	})();
 
 	fxPrefix = (() => {
 		const protocol = (window.document?.location?.protocol !== 'http:') ? 'https:' : '';
-		return `${protocol}//${window.Config ? Config.routes.client : 'play.pokemonshowdown.com'}/fx/`;
+		const clientHost = window.Config?.routes?.client ||
+			(window.document?.location?.protocol === 'file:' ? 'pcr-showdown.com' : 'play.pokemonshowdown.com');
+		return `${protocol}//${clientHost}/fx/`;
 	})();
 
 	loadedSpriteData = { xy: 1, bw: 0 };
