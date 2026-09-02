@@ -283,8 +283,8 @@ export const Dex = new class implements ModdedDex {
 	pokeballs: string[] | null = null;
 
 	resourcePrefix = (() => {
-		if (window.Config?.routes?.client) return `//${Config.routes.client}/`;
 		if (window.location.protocol === 'file:') return 'https://pcr-showdown.com/';
+		if (window.Config?.routes?.client) return `//${Config.routes.client}/`;
 		return `${window.location.origin}/`;
 	})();
 
