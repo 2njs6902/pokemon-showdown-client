@@ -628,7 +628,7 @@ export class BattleScene implements BattleSceneStub {
 		this.backdropImage = bg;
 		console.log(`Background image: /${this.backdropImage}`);
 
-		if (this.$bg) {this.$bg.css('background-image',`url(/${this.backdropImage})`);}
+		if (this.$bg) {this.$bg.css('background-image', `url(${Dex.resourcePrefix}${this.backdropImage})`);}
 	}
 
 	getDetailsText(pokemon: Pokemon) {

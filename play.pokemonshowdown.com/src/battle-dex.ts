@@ -358,8 +358,8 @@ export const Dex = new class implements ModdedDex {
 
 		if (avatar.startsWith('#')) {
 			return (
-				window.location.origin +
-				'/sprites/trainers-custom/' +
+				Dex.resourcePrefix +
+				'sprites/trainers-custom/' +
 				toID(avatar.slice(1)) +
 				'.png'
 			);
@@ -377,8 +377,8 @@ export const Dex = new class implements ModdedDex {
 		}
 
 		return (
-			window.location.origin +
-			'/sprites/trainers/' +
+			Dex.resourcePrefix +
+			'sprites/trainers/' +
 			encodeURIComponent(avatar || 'aero - rejuvenation') +
 			'.png'
 		);
@@ -907,7 +907,7 @@ export const Dex = new class implements ModdedDex {
 					} else {
 						battlerDir = options.shiny ? 'back-shiny' : 'back';
 					}
-					spriteData.url = `sprites/rejuvenation/battlers/${battlerDir}/${name}.png`;
+					spriteData.url = `${this.resourcePrefix}sprites/rejuvenation/battlers/${battlerDir}/${name}.png`;
 				} else {
 					let modDir = options.mod;
 					if (!spriteData.isFrontSprite) modDir += '-back';
@@ -1053,7 +1053,7 @@ export const Dex = new class implements ModdedDex {
 				const top = femaleIndex * 32;
 
 				return `background:transparent ` +
-					`url(sprites/rejuvenation/pokemonicons/female.png?v=3) ` +
+					`url(${Dex.resourcePrefix}sprites/rejuvenation/pokemonicons/female.png?v=3) ` +
 					`no-repeat scroll -${left}px -${top}px${fainted};` +
 					`width:40px;height:32px;padding:0 4px;box-sizing:border-box;` +
 					`background-origin:content-box;background-clip:content-box`;
@@ -1067,7 +1067,7 @@ export const Dex = new class implements ModdedDex {
 
 			if (specificPokemon.includes(dexNumber)) {
 				return `background:transparent ` +
-					`url(sprites/rejuvenation/pokemonicons/${dexNumber}.png?v=3) ` +
+					`url(${Dex.resourcePrefix}sprites/rejuvenation/pokemonicons/${dexNumber}.png?v=3) ` +
 					`no-repeat scroll -${left}px 0px${fainted};` +
 					`width:40px;height:32px;padding:0 4px;box-sizing:border-box;` +
 					`background-origin:content-box;background-clip:content-box`;
@@ -1077,7 +1077,7 @@ export const Dex = new class implements ModdedDex {
 			const top = Math.max(0, dexNumber - 1) * 32;
 
 			return `background:transparent ` +
-				`url(sprites/rejuvenation/pokemonicons/pokemonicons-sheet.png?v=3) ` +
+				`url(${Dex.resourcePrefix}sprites/rejuvenation/pokemonicons/pokemonicons-sheet.png?v=3) ` +
 				`no-repeat scroll -${left}px -${top}px${fainted};` +
 				`width:40px;height:32px;padding:0 4px;box-sizing:border-box;` +
 				`background-origin:content-box;background-clip:content-box`;
@@ -1151,7 +1151,7 @@ export const Dex = new class implements ModdedDex {
 			}
 
 			return {
-				url: `sprites/rejuvenation/battlers/${shiny ? 'front-shiny' : 'front'}/${spriteid}.png`,
+				url: `${Dex.resourcePrefix}sprites/rejuvenation/battlers/${shiny ? 'front-shiny' : 'front'}/${spriteid}.png`,
 				x: 10,
 				y: 5,
 			};
@@ -1238,7 +1238,7 @@ export const Dex = new class implements ModdedDex {
 
 		return [
 			'background-color:transparent',
-			`background-image:url(sprites/itemicons/${itemid}.png)`,
+			`background-image:url(${Dex.resourcePrefix}sprites/itemicons/${itemid}.png)`,
 			'background-position:center',
 			'background-repeat:no-repeat',
 			'background-size:24px 24px',
@@ -1266,9 +1266,7 @@ export const Dex = new class implements ModdedDex {
 			? 'sprites/rejuvenation/types'
 			: 'sprites/types';
 
-		const prefix = isRejuvenation ? '' : Dex.resourcePrefix;
-
-		return `<img src="${prefix}${spriteDir}/${sanitizedType}.png" alt="${type}" height="14" width="32" class="pixelated${b ? ' b' : ''}" />`;
+		return `<img src="${Dex.resourcePrefix}${spriteDir}/${sanitizedType}.png" alt="${type}" height="14" width="32" class="pixelated${b ? ' b' : ''}" />`;
 	}
 
 	getCategoryIcon(category: string | null) {
