@@ -279,7 +279,8 @@ export class BattleScene implements BattleSceneStub {
 	) {
 		if (typeof effect === 'string') effect = BattleEffects[effect];
 
-		let $effect = $(`<img src="${effect.url!}" style="display:block;position:absolute" />`);
+		const effectUrl = new URL(effect.url!, Dex.fxPrefix).href;
+		let $effect = $(`<img src="${effectUrl}" style="display:block;position:absolute" />`);
 		this.$fx.append($effect);
 		if (additionalCss) $effect.css(additionalCss);
 		$effect = this.$fx.children().last();
@@ -1661,7 +1662,7 @@ export class BattleScene implements BattleSceneStub {
 		for (let i in BattleEffects) {
 			if (i === 'alpha' || i === 'omega') continue;
 			const url = BattleEffects[i].url;
-			if (url) this.preloadImage(url);
+			if (url) this.preloadImage(new URL(url, Dex.fxPrefix).href);
 		}
 		this.preloadImage(Dex.resourcePrefix + 'sprites/ani/substitute.gif');
 		this.preloadImage(Dex.resourcePrefix + 'sprites/ani-back/substitute.gif');
