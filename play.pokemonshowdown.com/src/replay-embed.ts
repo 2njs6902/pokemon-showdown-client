@@ -35,7 +35,7 @@ function requireScript(url: string) {
 
 const replayAssetBase = 'https://pcr-showdown.com/';
 
-linkStyle(`${replayAssetBase}style/font-awesome.css?`);
+linkStyle('https://play.pokemonshowdown.com/style/font-awesome.css?');
 linkStyle(`${replayAssetBase}style/battle.css?a7`);
 linkStyle(`${replayAssetBase}style/replay.css?a7`);
 linkStyle(`${replayAssetBase}style/utilichart.css?a7`);
