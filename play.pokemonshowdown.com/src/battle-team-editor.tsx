@@ -545,7 +545,9 @@ export class TeamEditorState extends PSModel {
 		}
 		if (noGuess) return defaultIVs;
 
-		const hpType = this.getHPMove(set);
+		// Rejuvenation stores Hidden Power's selected type independently of IVs.
+		// Do not alter or constrain its suggested IV spread to produce that type.
+		const hpType = this.isRejuvenation ? null : this.getHPMove(set);
 		const hpModulo = (useIVs ? 2 : 4);
 		const { minAtk, minSpe } = this.prefersMinStats(set);
 		if (minAtk) defaultIVs['atk'] = 0;
@@ -3299,7 +3301,7 @@ class StatForm extends preact.Component<{
 		const { editor, set } = this.props;
 		if (editor.gen <= 2) return null;
 
-		const hpType = editor.getHPMove(set);
+		const hpType = editor.isRejuvenation ? null : editor.getHPMove(set);
 		const hpIVdata = hpType && !editor.canHyperTrain(set) && editor.getHPIVs(hpType) || null;
 		const autoSpread = set.ivs && editor.defaultIVs(set, false);
 		const autoSpreadValue = autoSpread && Object.values(autoSpread).join('/');
