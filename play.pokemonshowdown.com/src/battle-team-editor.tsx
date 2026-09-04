@@ -188,7 +188,6 @@ export class TeamEditorState extends PSModel {
 		}
 		case 'move': {
 			const move = this.dex.moves.get(value);
-			if (this.isRejuvenation && move.id === 'hiddenpower') return 'Hidden Power';
 			return move.exists ? move.name : null;
 		}
 		default:
@@ -3937,7 +3936,7 @@ class DetailsForm extends preact.Component<{
 	};
 	changeHPType = (ev: Event) => {
 		const target = ev.currentTarget as HTMLInputElement;
-		const { editor, set } = this.props;
+		const { set } = this.props;
 		if (target.value) {
 			set.hpType = target.value;
 		} else {
@@ -3945,8 +3944,7 @@ class DetailsForm extends preact.Component<{
 		}
 		for (let i = 0; i < set.moves.length; i++) {
 			if (toID(set.moves[i]).startsWith('hiddenpower')) {
-				set.moves[i] = editor.isRejuvenation ? 'Hidden Power' :
-					(target.value ? `Hidden Power ${target.value}` : 'Hidden Power');
+				set.moves[i] = target.value ? `Hidden Power ${target.value}` : 'Hidden Power';
 			}
 		}
 		this.props.onChange();

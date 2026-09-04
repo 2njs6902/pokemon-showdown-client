@@ -1950,10 +1950,13 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 					if (moves.includes(moveid)) continue;
 					moves.push(moveid);
 					if (moveid === 'sketch') sketch = true;
-					if (moveid === 'hiddenpower' && !format.includes('rejuvenation')) {
+					if (moveid === 'hiddenpower') {
 						moves.push(
 							'hiddenpowerbug', 'hiddenpowerdark', 'hiddenpowerdragon', 'hiddenpowerelectric', 'hiddenpowerfighting', 'hiddenpowerfire', 'hiddenpowerflying', 'hiddenpowerghost', 'hiddenpowergrass', 'hiddenpowerground', 'hiddenpowerice', 'hiddenpowerpoison', 'hiddenpowerpsychic', 'hiddenpowerrock', 'hiddenpowersteel', 'hiddenpowerwater'
 						);
+						if (format.includes('rejuvenation')) {
+							moves.push('hiddenpowernormal', 'hiddenpowerfairy');
+						}
 					}
 				}
 			}
