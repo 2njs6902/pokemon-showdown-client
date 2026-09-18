@@ -768,10 +768,19 @@ export class BattleScene implements BattleSceneStub {
 				noflip = ' noflip';
 			}
 		}
+		const battleTitles: { [id: string]: string } = {
+			rebornphoenix: 'Reborn Phoenix',
+		};
+		const titleName = Object.prototype.hasOwnProperty.call(battleTitles, side.title) ? battleTitles[side.title] : '';
+		const titlehtml = titleName ? (
+			`<div class="battle-title battle-title-${side.title}" aria-label="Title: ${BattleLog.escapeHTML(titleName)}">` +
+			`<span class="battle-title-outline" aria-hidden="true">${BattleLog.escapeHTML(titleName)}</span>` +
+			`<span class="battle-title-fill" aria-hidden="true">${BattleLog.escapeHTML(titleName)}</span></div>`
+		) : '';
 		return (
 			`<div class="trainer trainer-${posStr}"${faded}><strong>${BattleLog.escapeHTML(side.name)}</strong>` +
 			`<div class="trainersprite${noflip}"${ratinghtml} style="background-image:url(${avatar})">` +
-			`</div>${badgehtml}${pokemonhtml}</div>`
+			`</div>${titlehtml}${badgehtml}${pokemonhtml}</div>`
 		);
 	}
 	updateSidebar(side: Side) {
