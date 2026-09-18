@@ -16,7 +16,7 @@ function dirindex_sprites() {
 }
 
 $sprite_credits = [
-// 	"acerola.png" => "Beliot419",
+	"acerola.png" => "Beliot419",
 // 	"aetheremployee.png" => "Beliot419",
 // 	"aetheremployeef.png" => "Beliot419",
 // 	"aetherfoundation.png" => "Beliot419",
@@ -238,9 +238,9 @@ $sprite_credits = [
 // 	"maxie-gen6.png" => "hyo-oppa",
 // 	"may.png" => "hyo-oppa",
 	"aarune - ORAS.png" => "kyledove",
-// 	"acerola-masters.png" => "kyledove",
-// 	"acerola-masters2.png" => "kyledove",
-// 	"acerola-masters3.png" => "kyledove",
+	"acerola-masters.png" => "kyledove",
+	"acerola-masters2.png" => "kyledove",
+	"acerola-masters3.png" => "kyledove",
 // 	"acetrainer-gen6.png" => "kyledove",
 // 	"acetrainer-gen6xy.png" => "kyledove",
 // 	"acetrainer-gen7.png" => "kyledove",
