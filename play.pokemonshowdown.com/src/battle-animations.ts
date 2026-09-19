@@ -774,8 +774,8 @@ export class BattleScene implements BattleSceneStub {
 		const titleName = Object.prototype.hasOwnProperty.call(battleTitles, side.title) ? battleTitles[side.title] : '';
 		const titlehtml = titleName ? (
 			`<div class="battle-title battle-title-${side.title}" aria-label="Title: ${BattleLog.escapeHTML(titleName)}">` +
-			`<span class="battle-title-outline" aria-hidden="true">${BattleLog.escapeHTML(titleName)}</span>` +
-			`<span class="battle-title-fill" aria-hidden="true">${BattleLog.escapeHTML(titleName)}</span></div>`
+			`<img src="${Dex.resourcePrefix}sprites/titles/${side.title}.png" width="100" height="30" ` +
+			`alt="${BattleLog.escapeHTML(titleName)}" /></div>`
 		) : '';
 		return (
 			`<div class="trainer trainer-${posStr}"${faded}><strong>${BattleLog.escapeHTML(side.name)}</strong>` +
