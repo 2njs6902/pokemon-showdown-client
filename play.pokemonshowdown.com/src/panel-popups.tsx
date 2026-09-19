@@ -602,6 +602,7 @@ class OptionsPanel extends PSRoomPanel {
 	override componentDidMount() {
 		super.componentDidMount();
 		this.subscribeTo(PS.user);
+		PS.send('/battlecosmetics');
 		PS.mainmenu.makeQuery('userdetails', PS.user.userid).then(() => this.forceUpdate());
 	}
 	setTheme = (e: Event) => {
@@ -649,6 +650,20 @@ class OptionsPanel extends PSRoomPanel {
 			PS.send(value ? '/blockchallenges' : '/unblockchallenges');
 			break;
 		}
+		case 'battleTitle': {
+			const selectedTitle = toID(elem.value);
+			PS.user.battleCosmetics = { ...PS.user.battleCosmetics, selectedTitle };
+			PS.user.update(null);
+			PS.send(`/battletitle set ${selectedTitle || 'none'}`);
+			break;
+		}
+		case 'battleNameColor': {
+			const selectedColor = /^[0-9A-F]{6}$/.test(elem.value) ? elem.value : '';
+			PS.user.battleCosmetics = { ...PS.user.battleCosmetics, selectedColor };
+			PS.user.update(null);
+			PS.send(`/battlenamecolor set ${selectedColor || 'none'}`);
+			break;
+		}
 		case 'bwgfx': {
 			PS.prefs.set('bwgfx', value);
 			Dex.loadSpriteData(value || PS.prefs.noanim ? 'bw' : 'xy');
@@ -683,6 +698,8 @@ class OptionsPanel extends PSRoomPanel {
 	override render() {
 		const room = this.props.room;
 		const serverSettings = PS.prefs.serversettings;
+		const battleCosmetics = PS.user.battleCosmetics;
+		const selectedTitle = battleCosmetics.titles.find(title => title.id === battleCosmetics.selectedTitle);
 		return <PSPanelWrapper room={room} width={340}><div class="pad">
 			<p style="padding-left:50px">
 				<img
@@ -725,6 +742,33 @@ class OptionsPanel extends PSRoomPanel {
 			</p>
 			<hr />
 			<h3>Appearance</h3>
+			{battleCosmetics.titles.length ? <p>
+				<label class="optlabel">Battle title: <select
+					name="battleTitle" class="select" onChange={this.handleOnChange}
+					value={battleCosmetics.selectedTitle}
+				>
+					<option value="">None</option>
+					{battleCosmetics.titles.map(title => <option value={title.id}>{title.name}</option>)}
+				</select></label>
+				{selectedTitle ? <span style={{ display: 'block', margin: '8px 0 0 88px' }}>
+					<img
+						src={`${Dex.resourcePrefix}sprites/titles/${selectedTitle.id}.png`}
+						width="102" height="30" alt={selectedTitle.name}
+					/>
+				</span> : null}
+			</p> : null}
+			{battleCosmetics.colors.length ? <p>
+				<label class="optlabel">Battle name color: <select
+					name="battleNameColor" class="select" onChange={this.handleOnChange}
+					value={battleCosmetics.selectedColor}
+				>
+					<option value="">None</option>
+					{battleCosmetics.colors.map(color => <option value={color} style={{ color: `#${color}` }}>#{color}</option>)}
+				</select></label>
+				{battleCosmetics.selectedColor ? <span style={{ display: 'block', marginTop: '8px' }}>
+					Preview: <strong style={{ color: `#${battleCosmetics.selectedColor}` }}>{PS.user.name}</strong>
+				</span> : null}
+			</p> : null}
 			<p>
 				<label class="optlabel">Theme: <select
 					name="theme" class="select" onChange={this.setTheme} value={PS.prefs.theme || 'light'}

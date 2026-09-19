@@ -8,7 +8,9 @@
 import preact from "../js/lib/preact";
 import { PSLoginServer } from "./client-connection";
 import { PSBackground } from "./client-core";
-import { Config, PS, PSRoom, type PSRoomFocusOptions, type RoomID, type RoomOptions, type Team } from "./client-main";
+import {
+	Config, PS, PSRoom, type BattleCosmeticsData, type PSRoomFocusOptions, type RoomID, type RoomOptions, type Team,
+} from "./client-main";
 import { PSIcon, PSPanelErrorBoundary, PSPanelWrapper, PSRoomPanel, PSView, ReconnectTimer } from "./panels";
 import type { BattlesRoom } from "./panel-battle";
 import type { ChatRoom } from "./panel-chat";
@@ -156,6 +158,22 @@ export class MainMenuRoom extends PSRoom {
 		} case 'updatechallenges': {
 			const [, challengesBuf] = args;
 			this.receiveChallenges(challengesBuf);
+			return;
+		} case 'battlecosmetics': {
+			const data = JSON.parse(args[1] || '{}') as Partial<BattleCosmeticsData>;
+			const titles = Array.isArray(data.titles) ? data.titles.filter(
+				entry => entry && toID(entry.id) === entry.id && typeof entry.name === 'string'
+			) : [];
+			const colors = Array.isArray(data.colors) ? data.colors.filter(
+				color => typeof color === 'string' && /^[0-9A-F]{6}$/.test(color)
+			) : [];
+			PS.user.battleCosmetics = {
+				titles,
+				selectedTitle: titles.some(entry => entry.id === data.selectedTitle) ? data.selectedTitle! : '',
+				colors,
+				selectedColor: colors.includes(data.selectedColor || '') ? data.selectedColor! : '',
+			};
+			PS.user.update(null);
 			return;
 		} case 'updatesearch': {
 			const [, searchBuf] = args;

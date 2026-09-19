@@ -635,6 +635,12 @@ class PSTeams extends PSStreamModel<'team' | 'format'> {
  *********************************************************************/
 
 export type PSLoginState = { error?: string, success?: true, name?: string, needsPassword?: true, needsGoogle?: true };
+export interface BattleCosmeticsData {
+	titles: { id: ID, name: string }[];
+	selectedTitle: ID | '';
+	colors: string[];
+	selectedColor: string;
+}
 class PSUser extends PSStreamModel<PSLoginState | null> {
 	name = "";
 	group = '';
@@ -642,6 +648,7 @@ class PSUser extends PSStreamModel<PSLoginState | null> {
 	named = false;
 	away = false;
 	registered: { name: string, userid: ID } | null = null;
+	battleCosmetics: BattleCosmeticsData = { titles: [], selectedTitle: '', colors: [], selectedColor: '' };
 	avatar = "lucas";
 	challstr = '';
 	loggingIn: string | null = null;
@@ -798,6 +805,7 @@ class PSUser extends PSStreamModel<PSLoginState | null> {
 		this.userid = "" as ID;
 		this.named = false;
 		this.registered = null;
+		this.battleCosmetics = { titles: [], selectedTitle: '', colors: [], selectedColor: '' };
 		this.update(null);
 	}
 

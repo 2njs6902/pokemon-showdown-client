@@ -778,8 +778,9 @@ export class BattleScene implements BattleSceneStub {
 			`alt="${BattleLog.escapeHTML(titleName)}" /></div>`
 		) : '';
 		const titleClass = titleName ? ' trainer-has-title' : '';
+		const nameStyle = side.nameColor ? ` style="color:#${side.nameColor}"` : '';
 		return (
-			`<div class="trainer trainer-${posStr}${titleClass}"${faded}><strong>${BattleLog.escapeHTML(side.name)}</strong>` +
+			`<div class="trainer trainer-${posStr}${titleClass}"${faded}><strong${nameStyle}>${BattleLog.escapeHTML(side.name)}</strong>` +
 			`${titlehtml}<div class="trainersprite${noflip}"${ratinghtml} style="background-image:url(${avatar})">` +
 			`</div>${badgehtml}${pokemonhtml}</div>`
 		);
