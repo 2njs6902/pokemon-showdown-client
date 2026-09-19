@@ -777,8 +777,9 @@ export class BattleScene implements BattleSceneStub {
 			`<img src="${Dex.resourcePrefix}sprites/titles/${side.title}.png" width="100" height="30" ` +
 			`alt="${BattleLog.escapeHTML(titleName)}" /></div>`
 		) : '';
+		const titleClass = titleName ? ' trainer-has-title' : '';
 		return (
-			`<div class="trainer trainer-${posStr}"${faded}><strong>${BattleLog.escapeHTML(side.name)}</strong>` +
+			`<div class="trainer trainer-${posStr}${titleClass}"${faded}><strong>${BattleLog.escapeHTML(side.name)}</strong>` +
 			`${titlehtml}<div class="trainersprite${noflip}"${ratinghtml} style="background-image:url(${avatar})">` +
 			`</div>${badgehtml}${pokemonhtml}</div>`
 		);

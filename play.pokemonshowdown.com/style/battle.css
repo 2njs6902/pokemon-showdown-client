@@ -369,16 +369,19 @@ License: GPLv2
 
 .trainer div.battle-title {
 	position: relative;
-	width: 100px;
+	width: 102px;
 	height: 30px;
-	margin: 3px 0 4px;
+	margin: 3px 0 4px -1px;
 	opacity: 1;
 	background: none;
 }
 .battle-title img {
 	display: block;
-	width: 100px;
+	width: 102px;
 	height: 30px;
+}
+.trainer-has-title {
+	transform: translateY(4px);
 }
 .turn {
 	position: absolute;
