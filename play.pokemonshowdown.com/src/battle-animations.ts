@@ -779,8 +779,8 @@ export class BattleScene implements BattleSceneStub {
 		) : '';
 		return (
 			`<div class="trainer trainer-${posStr}"${faded}><strong>${BattleLog.escapeHTML(side.name)}</strong>` +
-			`<div class="trainersprite${noflip}"${ratinghtml} style="background-image:url(${avatar})">` +
-			`</div>${titlehtml}${badgehtml}${pokemonhtml}</div>`
+			`${titlehtml}<div class="trainersprite${noflip}"${ratinghtml} style="background-image:url(${avatar})">` +
+			`</div>${badgehtml}${pokemonhtml}</div>`
 		);
 	}
 	updateSidebar(side: Side) {
