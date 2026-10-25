@@ -518,6 +518,19 @@ License: GPLv2
 	background: transparent url(../sprites/rejuvenation/backdrops/forestfield.png) no-repeat scroll left top;
 	background-size: 640px 360px;
 }
+.hauntedfieldweather {
+	background: transparent url(../sprites/rejuvenation/backdrops/hauntedfield.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
+.narcissafieldweather {
+	background: transparent url(../sprites/rejuvenation/backdrops/narcissa.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
+.rainbowfieldweather,
+.rainbowterrainweather {
+	background: transparent url(../sprites/rejuvenation/backdrops/rainbowfield.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
 .swampfieldweather {
 	background: transparent url(../sprites/rejuvenation/backdrops/swampfield.png) no-repeat scroll left top;
 	background-size: 640px 360px;
@@ -536,6 +549,10 @@ License: GPLv2
 }
 .underwaterfieldweather {
 	background: transparent url(../sprites/rejuvenation/backdrops/underwaterfield.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
+.watersurfacefieldweather {
+	background: transparent url(../sprites/rejuvenation/backdrops/watersurfacefield.png) no-repeat scroll left top;
 	background-size: 640px 360px;
 }
 
