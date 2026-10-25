@@ -555,6 +555,10 @@ License: GPLv2
 	background: transparent url(../sprites/rejuvenation/backdrops/watersurfacefield.png) no-repeat scroll left top;
 	background-size: 640px 360px;
 }
+.murkwatersurfacefieldweather {
+	background: transparent url(../sprites/rejuvenation/backdrops/battlebgMurkwaterSurface.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
 
 .battle .result {
 	display: none;

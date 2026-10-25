@@ -1206,7 +1206,8 @@ export class BattleTextParser {
 		}
 
 		case '-fieldstart': case '-fieldactivate': {
-			const [, effect] = args;
+			let [, effect] = args;
+			if (BattleTextParser.effectId(effect) === 'narcissafield') effect = 'Haunted Field';
 			const line1 = this.maybeAbility(kwArgs.from, kwArgs.of);
 			if (BattleTextParser.effectId(kwArgs.from) === 'hadronengine') {
 				return line1 + this.render(this.template('start', 'hadronengine'), {
@@ -1224,6 +1225,7 @@ export class BattleTextParser {
 
 		case '-fieldend': {
 			let [, effect] = args;
+			if (BattleTextParser.effectId(effect) === 'narcissafield') effect = 'Haunted Field';
 			let template = this.template('end', effect, 'NODEFAULT');
 			if (!template) template = this.template('endFieldEffect');
 			return this.render(template, { EFFECT: this.effect(effect) });

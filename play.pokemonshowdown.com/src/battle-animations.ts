@@ -978,7 +978,9 @@ export class BattleScene implements BattleSceneStub {
 	}
 
 	pseudoWeatherLeft(pWeather: WeatherState) {
-		let buf = `<br />${Dex.moves.get(pWeather[0]).name}`;
+		const effect = Dex.moves.get(pWeather[0]);
+		const effectName = effect.id === 'narcissafield' ? 'Haunted Field' : effect.name;
+		let buf = `<br />${effectName}`;
 		if (pWeather[1] < 0) {
 			return `${buf} <small>(Permanent)</small>`;
 		}
