@@ -1936,6 +1936,8 @@ export class BattleTooltips {
 		].includes(sourceAbility) ? '' : target.effectiveAbility();
 		const dex = this.battle.dex;
 		const priority = move.priority + (category === 'Status' && sourceAbility === 'Prankster' ? 1 : 0);
+		const hauntedField = this.battle.hasPseudoWeather('Haunted Field') ||
+			this.battle.hasPseudoWeather('Narcissa Field');
 
 		if (hardcoreMode && (move.category === 'Status' || dex.gen < 7)) return null;
 		if (move.id === 'struggle' && dex.gen > 1) return 1;
@@ -1985,6 +1987,7 @@ export class BattleTooltips {
 			// regular type effectiveness
 			if (tType.damageTaken?.[attackType] === Dex.IMMUNE) {
 				if (target.item === 'Ring Target') continue;
+				if (hauntedField && attackType === 'Ghost' && targetType === 'Normal') continue;
 				if (targetType === 'Ghost' && (sourceAbility === "Scrappy" || sourceAbility === "Mind's Eye")) continue;
 				if (targetType === 'Ghost' && (target.volatiles['foresight'] || target.volatiles['odorsleuth'])) continue;
 				if (targetType === 'Dark' && (target.volatiles['miracleeye'])) continue;

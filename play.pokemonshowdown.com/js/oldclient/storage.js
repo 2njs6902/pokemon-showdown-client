@@ -784,7 +784,6 @@ Storage.packTeam = function (team) {
 	var buf = '';
 	if (!team) return '';
 
-	var hasHP;
 	for (var i = 0; i < team.length; i++) {
 		var set = team[i];
 		if (buf) buf += ']';
@@ -808,7 +807,6 @@ Storage.packTeam = function (team) {
 			var moveid = toID(set.moves[j]);
 			if (j && !moveid) continue;
 			buf += (j ? ',' : '') + moveid;
-			if (moveid.substr(0, 11) === 'hiddenpower' && moveid.length > 11) hasHP = true;
 		}
 
 		// nature
@@ -866,7 +864,7 @@ Storage.packTeam = function (team) {
 			buf += '|';
 		}
 
-		if (set.pokeball || (set.hpType && !hasHP) || set.gigantamax || (set.dynamaxLevel !== undefined && set.dynamaxLevel !== 10) || set.teraType) {
+		if (set.pokeball || set.hpType || set.gigantamax || (set.dynamaxLevel !== undefined && set.dynamaxLevel !== 10) || set.teraType) {
 			buf += ',' + (set.hpType || '');
 			buf += ',' + toID(set.pokeball);
 			buf += ',' + (set.gigantamax ? 'G' : '');
