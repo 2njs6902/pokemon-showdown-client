@@ -2143,6 +2143,11 @@ class TeamEditorForm extends preact.Component<{
 		} else if (set.moves.includes(name)) {
 			set.moves.splice(set.moves.indexOf(name), 1);
 		} else {
+			if (editor.isRejuvenation && toID(name).startsWith('hiddenpower')) {
+				const selectedType = name.slice(13);
+				if (selectedType && Dex.types.get(selectedType).exists) set.hpType = selectedType;
+				name = 'Hidden Power';
+			}
 			for (let i = 0; i < set.moves.length + 1; i++) {
 				if (!set.moves[i]) {
 					set.moves[i] = name;
@@ -2486,6 +2491,11 @@ class TeamEditorForm extends preact.Component<{
 				break;
 			case 'move':
 				if (focus.typeIndex >= set.moves.length && !canonical) return true;
+				if (editor.isRejuvenation && toID(canonical).startsWith('hiddenpower')) {
+					const selectedType = canonical.slice(13);
+					if (selectedType && Dex.types.get(selectedType).exists) set.hpType = selectedType;
+					canonical = 'Hidden Power';
+				}
 				while (set.moves.length <= focus.typeIndex) set.moves.push('');
 				set.moves[focus.typeIndex] = canonical;
 				target.value = canonical;
@@ -3936,15 +3946,17 @@ class DetailsForm extends preact.Component<{
 	};
 	changeHPType = (ev: Event) => {
 		const target = ev.currentTarget as HTMLInputElement;
-		const { set } = this.props;
+		const { editor, set } = this.props;
 		if (target.value) {
 			set.hpType = target.value;
 		} else {
 			delete set.hpType;
 		}
-		for (let i = 0; i < set.moves.length; i++) {
-			if (toID(set.moves[i]).startsWith('hiddenpower')) {
-				set.moves[i] = target.value ? `Hidden Power ${target.value}` : 'Hidden Power';
+		if (editor.isRejuvenation) {
+			for (let i = 0; i < set.moves.length; i++) {
+				if (toID(set.moves[i]).startsWith('hiddenpower')) {
+					set.moves[i] = 'Hidden Power';
+				}
 			}
 		}
 		this.props.onChange();

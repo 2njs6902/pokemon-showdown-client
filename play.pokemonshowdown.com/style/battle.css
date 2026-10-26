@@ -551,6 +551,10 @@ License: GPLv2
 	background: transparent url(../sprites/rejuvenation/backdrops/underwaterfield.png) no-repeat scroll left top;
 	background-size: 640px 360px;
 }
+.icyfieldweather {
+	background: transparent url(../sprites/rejuvenation/backdrops/icyfield.png) no-repeat scroll left top;
+	background-size: 640px 360px;
+}
 .watersurfacefieldweather {
 	background: transparent url(../sprites/rejuvenation/backdrops/watersurfacefield.png) no-repeat scroll left top;
 	background-size: 640px 360px;

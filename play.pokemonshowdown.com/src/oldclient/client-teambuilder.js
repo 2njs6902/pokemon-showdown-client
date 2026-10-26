@@ -2895,6 +2895,7 @@
 			var isLetsGo = this.curTeam.format.includes('letsgo');
 			var isBDSP = this.curTeam.format.includes('bdsp');
 			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
+			var isRejuvenation = this.curTeam.format.includes('rejuvenation');
 			var isHackmons = this.curTeam.format.includes('hackmons') || this.curTeam.format.endsWith('bh');
 			var species = this.curTeam.dex.species.get(set.species);
 			if (!set) return;
@@ -2962,12 +2963,12 @@
 				buf += '</select></div></div>';
 			}
 
-			if (!isLetsGo && (this.curTeam.gen === 7 || isNatDex || (isBDSP && species.baseSpecies === 'Unown'))) {
+			if (isRejuvenation || (!isLetsGo && (this.curTeam.gen === 7 || isNatDex || (isBDSP && species.baseSpecies === 'Unown')))) {
 				buf += '<div class="formrow"><label class="formlabel" title="Hidden Power Type">Hidden Power:</label><div><select name="hptype" class="button">';
 				buf += '<option value=""' + (!set.hpType ? ' selected="selected"' : '') + '>(automatic type)</option>'; // unset
 				var types = Dex.types.all();
 				for (var i = 0; i < types.length; i++) {
-					if (types[i].HPivs) {
+					if (types[i].HPivs || (isRejuvenation && (types[i].name === 'Normal' || types[i].name === 'Fairy'))) {
 						buf += '<option value="' + types[i].name + '"' + (set.hpType === types[i].name ? ' selected="selected"' : '') + '>' + types[i].name + '</option>';
 					}
 				}
@@ -3481,12 +3482,18 @@
 			var set = this.curSet;
 			if (!set) return;
 			var gen = this.curTeam.gen;
+			var isRejuvenation = this.curTeam.format.includes('rejuvenation');
 
 			var minSpe;
 			if (resetSpeed) minSpe = false;
 			if (moveName.substr(0, 13) === 'Hidden Power ') {
-				if (!this.canHyperTrain(set)) {
-					var hpType = moveName.substr(13);
+				var hpType = moveName.substr(13);
+				if (isRejuvenation) {
+					set.hpType = hpType;
+					for (var moveIndex = 0; moveIndex < set.moves.length; moveIndex++) {
+						if (set.moves[moveIndex] === moveName) set.moves[moveIndex] = 'Hidden Power';
+					}
+				} else if (!this.canHyperTrain(set)) {
 
 					set.ivs = { hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 };
 					if (this.curTeam.gen > 2) {
