@@ -49,7 +49,7 @@ export const CustomBattleMusicTracks: BattleMusicTrack[] = [
 	{
 		id: 'gc-sv-legendary-quartet',
 		name: 'GlitchxCity - SV Legendary Quartet Battle Theme (Remix)',
-		url: 'audio/other/GlitchxCity - SV Legendary Quartet Battle Theme (Remix).mp3',
+		url: 'audio/rejuvenation/GlitchxCity - SV Legendary Quartet Battle Theme (Remix).mp3',
 		loopStart: 0,
 		loopEnd: 0,
 	},

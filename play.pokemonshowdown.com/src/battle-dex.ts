@@ -616,6 +616,17 @@ export const Dex = new class implements ModdedDex {
 		} else {
 			species = dex.species.get(pokemon.name);
 		}
+		if (dex.modid.includes('rejuvenation')) {
+			const florgesFormes: Record<string, number> = {
+				florges: 0,
+				florgesblue: 1,
+				florgesblack: 2,
+				florgesgreen: 3,
+				florgespurple: 4,
+				florgesrebornflower: 5,
+			};
+			if (species.id in florgesFormes) return florgesFormes[species.id];
+		}
 		const baseSpecies = dex.species.get(
 			species.baseSpecies || species.name
 		);
@@ -772,6 +783,9 @@ export const Dex = new class implements ModdedDex {
 			shiny: options.shiny,
 		};
 		let name = species.spriteid;
+		if (options.mod?.includes('rejuvenation') && species.id === 'florgesrebornflower') {
+			name = 'florges-reborn-flower';
+		}
 		let dir;
 		let facing;
 		if (isFront) {
@@ -1103,6 +1117,9 @@ export const Dex = new class implements ModdedDex {
 			if (pokemon.species && !spriteid) {
 				spriteid = species.spriteid || id;
 			}
+		}
+		if (dex.modid.includes('rejuvenation') && id === 'florgesrebornflower') {
+			spriteid = 'florges-reborn-flower';
 		}
 		
 		if (dex.modid.includes('rejuvenation')) {

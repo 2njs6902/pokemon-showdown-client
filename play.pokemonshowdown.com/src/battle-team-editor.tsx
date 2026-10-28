@@ -3972,6 +3972,11 @@ class DetailsForm extends preact.Component<{
 	render() {
 		const { editor, set } = this.props;
 		const species = editor.dex.species.get(set.species);
+		const speciesId = toID(set.species);
+		const isRejuvenationFlorges = editor.isRejuvenation && speciesId.startsWith('florges');
+		const florgesFormes = isRejuvenationFlorges && speciesId !== 'florgesrebornflower' ? [
+			'florges', 'florgesblue', 'florgesblack', 'florgesgreen', 'florgespurple',
+		] : null;
 		return <div style="font-size:10pt" role="dialog" aria-label="Details">
 			<div class="resultheader"><h3>Details</h3></div>
 			<div class="pad">
@@ -4079,12 +4084,13 @@ class DetailsForm extends preact.Component<{
 						)}
 					</label>
 				</p>}
-				{species.cosmeticFormes && <div>
+				{(florgesFormes || species.cosmeticFormes && !isRejuvenationFlorges) && <div>
 					<p><strong>Form:</strong></p>
 					<div style="display:flex;flex-wrap:wrap;gap:6px;max-width:400px;">
 						{(() => {
 							const baseId = toID(species.baseSpecies);
-							const forms = species.cosmeticFormes?.length ? [baseId, ...species.cosmeticFormes.map(toID)] : [baseId];
+							const forms = florgesFormes || (species.cosmeticFormes?.length ?
+								[baseId, ...species.cosmeticFormes.map(toID)] : [baseId]);
 							return forms.map(id => {
 								const sp = editor.dex.species.get(id);
 								const isCur = toID(set.species) === id;
