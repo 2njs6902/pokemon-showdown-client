@@ -16,6 +16,7 @@ import type { BattleSceneStub } from './battle-scene-stub';
 import { BattleMoveAnims } from './battle-animations-moves';
 import { BattleLog } from './battle-log';
 import { type BattleBGM, BattleSound } from './battle-sound';
+import { BattleMusicTracks } from './battle-music';
 import { Dex, toID, type ID, type SpriteData } from './battle-dex';
 import { BattleNatures } from './battle-dex-data';
 import { BattleTooltips } from './battle-tooltips';
@@ -82,6 +83,7 @@ export class BattleScene implements BattleSceneStub {
 	bgm: BattleBGM | null = null;
 	backdropImage = '';
 	bgmNum = 0;
+	bgmTrack = '';
 	preloadCache: { [url: string]: HTMLImageElement } = {};
 
 	messagebarOpen = false;
@@ -1681,11 +1683,28 @@ export class BattleScene implements BattleSceneStub {
 		this.preloadImage(Dex.resourcePrefix + 'sprites/ani-back/substitute.gif');
 	}
 	rollBgm() {
+		if (BattleSound.musicChoice !== 'random') {
+			this.setBgmTrack(BattleSound.musicChoice);
+			return;
+		}
 		this.setBgm(1 + this.numericId % 15);
 	}
+	setBgmTrack(trackId: string) {
+		const track = BattleMusicTracks.find(entry => entry.id === trackId);
+		if (!track) {
+			this.setBgm(1 + this.numericId % 15);
+			return;
+		}
+		if (this.bgmTrack === track.id) return;
+		this.bgmTrack = track.id;
+		this.bgmNum = 0;
+		this.bgm = BattleSound.loadBgm(track.url, track.loopStart, track.loopEnd, this.bgm);
+		this.updateBgm();
+	}
 	setBgm(bgmNum: number) {
-		if (this.bgmNum === bgmNum) return;
+		if (this.bgmNum === bgmNum && this.bgmTrack === '') return;
 		this.bgmNum = bgmNum;
+		this.bgmTrack = '';
 
 		switch (bgmNum) {
 		case -1:

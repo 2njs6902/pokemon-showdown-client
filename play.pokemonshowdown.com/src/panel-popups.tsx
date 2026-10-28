@@ -2,6 +2,7 @@ import preact from "../js/lib/preact";
 import { toID, toRoomid, toUserid, Dex, PSUtils } from "./battle-dex";
 import type { ID } from "./battle-dex-data";
 import { BattleLog } from "./battle-log";
+import { BattleMusicTracks } from "./battle-music";
 import { PSLoginServer } from "./client-connection";
 import { PSBackground } from "./client-core";
 import {
@@ -541,6 +542,15 @@ class VolumePanel extends PSRoomPanel {
 		PS.prefs.set('mute', !!checkbox.checked);
 		PS.update();
 	};
+	setBattleMusic = (e: Event) => {
+		const select = e.currentTarget as HTMLSelectElement;
+		PS.prefs.set('battlemusic', select.value);
+		for (const roomid in PS.rooms) {
+			const room = PS.rooms[roomid] as BattleRoom;
+			if (room.type !== 'battle' || !room.battle?.scene) continue;
+			(room.battle.scene as any).rollBgm?.();
+		}
+	};
 	override componentDidMount() {
 		super.componentDidMount();
 		this.subscriptions.push(PS.prefs.subscribe(() => {
@@ -561,6 +571,16 @@ class VolumePanel extends PSRoomPanel {
 						type="range" min="0" max="100" step="1" name="effectvolume" value={PS.prefs.effectvolume}
 						onChange={this.setVolume} onInput={this.setVolume} onKeyUp={this.setVolume}
 					/>}
+			</p>
+			<p>
+				<label class="optlabel" for="battle-music-select">Battle music:</label>{' '}
+				<select
+					id="battle-music-select" name="battlemusic" value={PS.prefs.battlemusic}
+					onChange={this.setBattleMusic}
+				>
+					<option value="random">Random</option>
+					{BattleMusicTracks.map(track => <option key={track.id} value={track.id}>{track.name}</option>)}
+				</select>
 			</p>
 			<p class="volume">
 				<label class="optlabel">

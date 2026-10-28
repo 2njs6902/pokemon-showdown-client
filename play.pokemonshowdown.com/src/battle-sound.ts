@@ -58,6 +58,7 @@ export class BattleBGM {
 		if (this.willRewind) this.sound.currentTime = 0;
 		this.willRewind = false;
 		this.isActuallyPlaying = true;
+		this.sound.loop = !this.loopend;
 		this.sound.volume = BattleSound.bgmVolume / 100;
 		this.sound.play();
 		this.updateTime();
@@ -76,6 +77,7 @@ export class BattleBGM {
 		this.timer = undefined;
 		if (this !== BattleSound.currentBgm()) return;
 		if (!this.sound) return;
+		if (!this.loopend) return;
 
 		const progress = this.sound.currentTime * 1000;
 		if (progress > this.loopend - 1000) {
@@ -110,6 +112,7 @@ export const BattleSound = new class {
 	effectVolume = 50;
 	bgmVolume = 50;
 	muted = false;
+	musicChoice = 'random';
 
 	getSound(url: string) {
 		if (!window.HTMLAudioElement) return;
@@ -119,7 +122,8 @@ export const BattleSound = new class {
 			if (/^https?:\/\//.test(url)) {
 				sound.src = url;
 			} else {
-				const host = url.startsWith('sprites/rejuvenation/') ? Config.routes.client : 'play.pokemonshowdown.com';
+				const useCustomHost = url.startsWith('sprites/rejuvenation/') || url.startsWith('audio/rejuvenation/');
+				const host = useCustomHost ? Config.routes.client : 'play.pokemonshowdown.com';
 				sound.src = `https://${host}/${url}`;
 			}
 			sound.volume = this.effectVolume / 100;
@@ -189,10 +193,11 @@ export const BattleSound = new class {
 
 if (typeof PS === 'object') {
 	PS.prefs.subscribeAndRun(key => {
-		if (!key || key === 'musicvolume' || key === 'effectvolume' || key === 'mute') {
+		if (!key || key === 'musicvolume' || key === 'effectvolume' || key === 'mute' || key === 'battlemusic') {
 			BattleSound.effectVolume = PS.prefs.effectvolume;
 			BattleSound.bgmVolume = PS.prefs.musicvolume;
 			BattleSound.muted = PS.prefs.mute;
+			BattleSound.musicChoice = PS.prefs.battlemusic;
 			BattleBGM.update();
 		}
 	});

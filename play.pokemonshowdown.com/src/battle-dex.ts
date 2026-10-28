@@ -1426,8 +1426,29 @@ export class ModdedDex {
 				name = BattleAliases[id];
 				id = toID(name);
 			}
-			const baseSpecies = Dex.species.get(originalId || name);
 			const modTable = window.BattleTeambuilderTable[getTeambuilderTableKey(this.modid)];
+			const baseSpecies = Dex.species.get(originalId || name);
+			if (!baseSpecies.exists) {
+				for (const baseSpeciesId of BattleBaseSpeciesChart) {
+					if (!originalId.startsWith(baseSpeciesId)) continue;
+					const cosmeticFormes = modTable?.overrideSpeciesData?.[baseSpeciesId]?.cosmeticFormes;
+					const formeName = cosmeticFormes?.find(forme => toID(forme) === originalId);
+					if (!formeName) continue;
+
+					const modBaseSpecies = this.species.get(baseSpeciesId);
+					const species = new Species(originalId, formeName, {
+						...modBaseSpecies,
+						name: formeName,
+						forme: formeName.slice(modBaseSpecies.name.length + 1),
+						baseForme: "",
+						baseSpecies: modBaseSpecies.name,
+						cosmeticFormes: null,
+						otherFormes: null,
+					});
+					this.cache.Species[originalId] = species;
+					return species;
+				}
+			}
 			const exactModData = modTable?.overrideSpeciesData?.[originalId];
 			const isStandaloneModSpecies = exactModData?.id === originalId;
 			id = isStandaloneModSpecies ? originalId : (baseSpecies.exists ? baseSpecies.id : originalId);

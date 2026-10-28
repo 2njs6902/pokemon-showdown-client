@@ -172,6 +172,7 @@ class PSPrefs extends PSStreamModel<string | null> {
 	mute = false;
 	effectvolume = 50;
 	musicvolume = 50;
+	battlemusic = 'random';
 	notifvolume = 50;
 	uploadprivacy = true;
 

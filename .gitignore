@@ -9,6 +9,10 @@ npm-debug.log
 /play.pokemonshowdown.com/dirindex/fontawesome5*
 
 /play.pokemonshowdown.com/audio/
+!/play.pokemonshowdown.com/audio/
+/play.pokemonshowdown.com/audio/*
+!/play.pokemonshowdown.com/audio/rejuvenation/
+!/play.pokemonshowdown.com/audio/rejuvenation/**
 
 # built from other sources
 /play.pokemonshowdown.com/index.php
