@@ -1445,7 +1445,7 @@ export class ModdedDex {
 			}
 			const modTable = window.BattleTeambuilderTable[getTeambuilderTableKey(this.modid)];
 			const baseSpecies = Dex.species.get(originalId || name);
-			if (!baseSpecies.exists) {
+			if (!baseSpecies.exists || baseSpecies.id !== originalId) {
 				for (const baseSpeciesId of BattleBaseSpeciesChart) {
 					if (!originalId.startsWith(baseSpeciesId)) continue;
 					const cosmeticFormes = modTable?.overrideSpeciesData?.[baseSpeciesId]?.cosmeticFormes;

@@ -53,6 +53,20 @@ export const CustomBattleMusicTracks: BattleMusicTrack[] = [
 		loopStart: 0,
 		loopEnd: 0,
 	},
+	{
+		id: 'gc-sv-carmine-theme',
+		name: 'GlitchxCity - Carmine Battle Theme (Remix)',
+		url: 'audio/rejuvenation/GlitchxCity - Carmine Battle Theme (Remix).mp3',
+		loopStart: 0,
+		loopEnd: 0,
+	},
+	{
+		id: 'gc-sv-magikarp-festival',
+		name: 'GlitchxCity - Magikarp Festival (Remix)',
+		url: 'audio/rejuvenation/GlitchxCity - Magikarp Festival (Remix).mp3',
+		loopStart: 0,
+		loopEnd: 0,
+	},
 ];
 
 export const BattleMusicTracks = [...DefaultBattleMusicTracks, ...CustomBattleMusicTracks];

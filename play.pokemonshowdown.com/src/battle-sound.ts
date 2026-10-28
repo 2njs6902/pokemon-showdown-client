@@ -184,6 +184,9 @@ export const BattleSound = new class {
 	}
 	setBgmVolume(bgmVolume: number) {
 		this.bgmVolume = this.loudnessPercentToAmplitudePercent(bgmVolume);
+		for (const bgm of this.bgm) {
+			if (bgm.sound) bgm.sound.volume = this.bgmVolume / 100;
+		}
 		BattleBGM.update();
 	}
 	setEffectVolume(effectVolume: number) {
@@ -194,11 +197,10 @@ export const BattleSound = new class {
 if (typeof PS === 'object') {
 	PS.prefs.subscribeAndRun(key => {
 		if (!key || key === 'musicvolume' || key === 'effectvolume' || key === 'mute' || key === 'battlemusic') {
-			BattleSound.effectVolume = PS.prefs.effectvolume;
-			BattleSound.bgmVolume = PS.prefs.musicvolume;
-			BattleSound.muted = PS.prefs.mute;
+			BattleSound.setEffectVolume(PS.prefs.effectvolume);
+			BattleSound.setBgmVolume(PS.prefs.musicvolume);
+			BattleSound.setMute(PS.prefs.mute);
 			BattleSound.musicChoice = PS.prefs.battlemusic;
-			BattleBGM.update();
 		}
 	});
 }
