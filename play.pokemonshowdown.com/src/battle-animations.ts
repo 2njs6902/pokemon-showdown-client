@@ -781,9 +781,10 @@ export class BattleScene implements BattleSceneStub {
 		) : '';
 		const titleClass = titleName ? ' trainer-has-title' : '';
 		const nameStyle = side.nameColor ? ` style="color:#${side.nameColor}"` : '';
+		const trainerSpriteSize = avatar.toLowerCase().includes('monokuma') ? ';background-size:80px 80px' : '';
 		return (
 			`<div class="trainer trainer-${posStr}${titleClass}"${faded}><strong${nameStyle}>${BattleLog.escapeHTML(side.name)}</strong>` +
-			`${titlehtml}<div class="trainersprite${noflip}"${ratinghtml} style="background-image:url(${avatar})">` +
+			`${titlehtml}<div class="trainersprite${noflip}"${ratinghtml} style="background-image:url(${avatar})${trainerSpriteSize}">` +
 			`</div>${badgehtml}${pokemonhtml}</div>`
 		);
 	}
