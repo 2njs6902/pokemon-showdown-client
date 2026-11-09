@@ -370,7 +370,7 @@ License: GPLv2
 .trainer div.battle-title {
 	position: relative;
 	width: 102px;
-	height: 30px;
+	height: 15px;
 	margin: 3px 0 4px -1px;
 	opacity: 1;
 	background: none;
@@ -378,7 +378,7 @@ License: GPLv2
 .battle-title img {
 	display: block;
 	width: 102px;
-	height: 30px;
+	height: 15px;
 }
 .trainer-has-title {
 	transform: translateY(4px);
