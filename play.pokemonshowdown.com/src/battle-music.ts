@@ -67,6 +67,34 @@ export const CustomBattleMusicTracks: BattleMusicTrack[] = [
 		loopStart: 0,
 		loopEnd: 0,
 	},
+	{
+		id: 'gc-sv-magikarp-festival',
+		name: 'GlitchxCity - Magikarp Festival (Remix)',
+		url: 'audio/rejuvenation/GlitchxCity - Magikarp Festival (Remix).mp3',
+		loopStart: 0,
+		loopEnd: 0,
+	},
+	{
+		id: 'champions-world-championship',
+		name: 'Champions - World Championship Battle Music',
+		url: 'audio/rejuvenation/Champions - World Championship Battle Music.mp3',
+		loopStart: 0,
+		loopEnd: 0,
+	},
+	{
+		id: 'champions-vgc-finals',
+		name: 'Champions - VGC Masters Finals Battle Music',
+		url: 'audio/rejuvenation/Champions - VGC Masters Finals Battle Music.mp3',
+		loopStart: 0,
+		loopEnd: 0,
+	},
+	{
+		id: 'champions-arena',
+		name: 'Champions - Arena Trainer Battle Music',
+		url: 'audio/rejuvenation/Champions - Arena Trainer Battle Music.mp3',
+		loopStart: 0,
+		loopEnd: 0,
+	},
 ];
 
 export const BattleMusicTracks = [...DefaultBattleMusicTracks, ...CustomBattleMusicTracks];

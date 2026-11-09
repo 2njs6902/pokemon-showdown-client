@@ -824,6 +824,7 @@ $sprite_credits = [
 // 	"taunie.png" => "kyledove",
 // 	"urbain.png" => "kyledove",
 "luxus - fairytail.png" => "Miguel Horo",
+"monokuma - danganronpa.png" => "Unknown",
 "aero - rejuvenation.png" => "Zumi",
 "aevia - rejuvenation.png" => "Zumi",
 "aevis - rejuvenation.png" => "Zumi",
